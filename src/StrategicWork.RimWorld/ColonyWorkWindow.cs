@@ -36,6 +36,8 @@ public sealed class ColonyWorkWindow : MainTabWindow
     private string notice = "";
     private string presetName = "";
     private string priorityBuffer = "";
+    private StrategyPreset? budgetPreset;
+    private StrategyBudget displayedBudget;
     private string? selectedPawn;
     private Vector2 scroll;
 
@@ -144,7 +146,8 @@ public sealed class ColonyWorkWindow : MainTabWindow
         summaryWidth = -1;
         resultSummary.Add(rush ? T("RushMode") : T("RoutineMode", preset.TrainingLossLimit.ToString("P0")));
         if (rush && RushFocus != null)
-            resultSummary.Add(T("RushFocusSummary", Direction(RushFocus)));
+            resultSummary.Add(BudgetFor(preset).RemainingShare > 0
+                ? T("RushFocusSummary", Direction(RushFocus)) : T("NoSpareForFocus"));
         if (!rush && preset.TrainingLossLimit > 0)
             resultSummary.Add(T(result.TrainingApplied ? "TrainingChosen" : "TrainingKept"));
         resultSummary.Add(T("ResultsHelp"));
@@ -238,8 +241,7 @@ public sealed class ColonyWorkWindow : MainTabWindow
             if (Widgets.ButtonText(button, T("Page_" + tab))) Show(tab);
             if (tab == page) Widgets.DrawLineHorizontal(button.x, button.yMax - 2, button.width);
         }
-        decimal minimumPercent = state.Preset.Strategies.Sum(s => s.MinimumShare) * 100;
-        string footer = minimumPercent > 100 ? T("InvalidMinimum", minimumPercent.ToString("0")) : notice;
+        string footer = notice;
         if (!Find.PlaySettings.useWorkPriorities)
             footer = footer.Length == 0 ? T("EnableManual") : footer + "\n" + T("EnableManual");
         float footerHeight = footer.Length == 0 ? 0 : Math.Min(80, Math.Max(26, Text.CalcHeight(footer, area.width)));
@@ -272,10 +274,9 @@ public sealed class ColonyWorkWindow : MainTabWindow
         var rush = Button(1);
         var apply = Button(2);
         var undo = Button(3);
-        bool valid = state!.Preset.Strategies.Sum(s => s.MinimumShare) <= 1m;
-        if (Widgets.ButtonText(preview, T("Preview"), active: valid))
+        if (Widgets.ButtonText(preview, T("Preview")))
             Perform(() => PreviewAndShow(false));
-        if (Widgets.ButtonText(rush, T("RushPreview"), active: valid))
+        if (Widgets.ButtonText(rush, T("RushPreview")))
             Perform(() => PreviewAndShow(true));
         TooltipHandler.TipRegion(rush, T("RushHint"));
         if (!Find.PlaySettings.useWorkPriorities)
@@ -287,14 +288,14 @@ public sealed class ColonyWorkWindow : MainTabWindow
                 return;
             }
         }
-        else if (Widgets.ButtonText(apply, T(plan == null || applied ? "Apply" : PreviewIsRush ? "ApplyRush" : "ApplyPreview"), active: valid))
+        else if (Widgets.ButtonText(apply, T(plan == null || applied ? "Apply" : PreviewIsRush ? "ApplyRush" : "ApplyPreview")))
             Perform(() => {
                 if (plan == null || applied) PreviewAllocation(false);
                 var history = ApplyPreview();
                 notice = T(PreviewIsRush ? "RushApplied" : "Applied", history.Edits.Count);
                 Show(Page.Results);
             });
-        if (Widgets.ButtonText(undo, T("Undo"), active: state.LastUndo != null && Find.PlaySettings.useWorkPriorities))
+        if (Widgets.ButtonText(undo, T("Undo"), active: state!.LastUndo != null && Find.PlaySettings.useWorkPriorities))
             Perform(() => {
                 ColonyAdapter.Undo(map!, state.LastUndo!, state.LockedCells);
                 state.LastUndo = null;
@@ -303,39 +304,56 @@ public sealed class ColonyWorkWindow : MainTabWindow
             });
     }
 
+    private StrategyBudget BudgetFor(StrategyPreset preset)
+    {
+        if (!ReferenceEquals(preset, budgetPreset))
+        {
+            displayedBudget = StrategyBudget.From(preset.Strategies);
+            budgetPreset = preset;
+        }
+        return displayedBudget;
+    }
+
+    private static string BudgetSummary(StrategyBudget budget) =>
+        T(budget.IsNormalized ? "NormalizedMinimum" : "MinimumTotal", (100m * budget.MinimumTotal).ToString("0.##"));
+
     private void DrawStrategy(Rect area)
     {
         var config = state!;
         // Strategy controls scroll as well on a small screen or at a large UI scale.
         float viewWidth = area.width - 18;
         float hintHeight = Math.Max(38, Text.CalcHeight(T("AllocationHelp"), viewWidth) + 5);
-        decimal minimumTotal = config.Preset.Strategies.Sum(s => s.MinimumShare) * 100;
-        bool spareWithNoWeights = minimumTotal < 100 && config.Preset.Strategies.All(s => s.RelativeWeight == 0);
+        var budget = BudgetFor(config.Preset);
+        float budgetHeight = Math.Max(Row, Text.CalcHeight(BudgetSummary(budget), viewWidth) + 5);
+        bool spareWithNoWeights = budget.RemainingShare > 0 && !budget.HasRelativeWeights;
         string spareHint = spareWithNoWeights
             ? T(config.Preset.UnweightedRemainder == UnweightedRemainder.PreserveExisting ? "ZeroKeep" : "ZeroLeave",
-                (100 - minimumTotal).ToString("0"))
+                (100m * budget.RemainingShare).ToString("0.##"))
             : "";
         float spareHeight = spareWithNoWeights ? Text.CalcHeight(spareHint, viewWidth) + 6 : 0;
         string trainingHelp = T("TrainingHint");
         float trainingHeight = Text.CalcHeight(trainingHelp, viewWidth) + 6;
-        var view = new Rect(0, 0, viewWidth, hintHeight + (config.Preset.Strategies.Count + 8) * Row + 20 + spareHeight + trainingHeight);
+        var view = new Rect(0, 0, viewWidth, hintHeight + (config.Preset.Strategies.Count + 7) * Row + budgetHeight + 20 + spareHeight + trainingHeight);
         Widgets.BeginScrollView(area, ref scroll, view);
         try
         {
             float y = 0;
             Widgets.Label(new Rect(0, y, view.width, hintHeight), T("AllocationHelp"));
             y += hintHeight;
-            float first = view.width * 0.28f;
-            float field = (view.width - first) / 2;
+            float first = view.width * 0.25f;
+            float targetWidth = Math.Min(95, view.width * 0.16f);
+            float field = (view.width - first - targetWidth) / 2;
             Widgets.Label(new Rect(0, y, first, Row), T("Direction"));
             Widgets.Label(new Rect(first, y, field, Row), T("Minimum"));
             Widgets.Label(new Rect(first + field, y, field, Row), T("Weight"));
+            Widgets.Label(new Rect(view.width - targetWidth, y, targetWidth, Row), T("TargetShare"));
             y += Row;
+            float rowStart = y;
             foreach (var allocation in config.Preset.Strategies)
             {
                 Widgets.Label(new Rect(0, y + 3, first, Row), Direction(allocation.Id));
-                int minimum = Slider(new Rect(first, y, field - 10, Row), (int)(allocation.MinimumShare * 100), true);
-                int weight = Slider(new Rect(first + field, y, field - 4, Row), (int)allocation.RelativeWeight, false);
+                decimal minimum = AllocationSlider(new Rect(first, y, field - 8, Row), allocation.MinimumShare * 100, true);
+                decimal weight = AllocationSlider(new Rect(first + field, y, field - 8, Row), allocation.RelativeWeight, false);
                 if (minimum != allocation.MinimumShare * 100 || weight != allocation.RelativeWeight)
                 {
                     config.SetAllocation(new(allocation.Id, minimum / 100m, weight));
@@ -343,9 +361,15 @@ public sealed class ColonyWorkWindow : MainTabWindow
                 }
                 y += Row;
             }
-            decimal total = config.Preset.Strategies.Sum(s => s.MinimumShare) * 100;
-            Widgets.Label(new Rect(0, y, view.width, Row), T(total > 100 ? "InvalidMinimum" : "MinimumTotal", total.ToString("0")));
-            y += Row;
+            budget = BudgetFor(config.Preset);
+            foreach (var allocation in config.Preset.Strategies)
+            {
+                Widgets.Label(new Rect(view.width - targetWidth, rowStart + 3, targetWidth, Row),
+                    budget.TargetFor(allocation).ToString("0.##%"));
+                rowStart += Row;
+            }
+            Widgets.Label(new Rect(0, y, view.width, budgetHeight), BudgetSummary(budget));
+            y += budgetHeight;
             int training = (int)Math.Round(config.Preset.TrainingLossLimit * 100);
             float titleWidth = Math.Min(view.width * 0.45f, 220);
             Widgets.Label(new Rect(0, y + 3, titleWidth, Row), T("TrainingLimit"));
@@ -381,39 +405,53 @@ public sealed class ColonyWorkWindow : MainTabWindow
             presetName = Widgets.TextField(new Rect(first + 5, y, field - 10, Row - 3), presetName, 48);
             TooltipHandler.TipRegion(new Rect(first, y, field, Row), T("NamePreset"));
             if (Widgets.ButtonText(new Rect(first + field, y, field, Row - 3), T("SavePreset"),
-                    active: total <= 100 && !string.IsNullOrWhiteSpace(presetName)))
-            {
-                string name = presetName.Trim();
-                config.SavedPresets[name] = config.Preset;
-                notice = T("Saved", name);
-            }
+                    active: !string.IsNullOrWhiteSpace(presetName)))
+                SaveCurrentPreset(presetName);
         }
         finally { Widgets.EndScrollView(); }
     }
 
-    private static int Slider(Rect rect, int current, bool percent)
+    internal void SaveCurrentPreset(string name)
+    {
+        name = name.Trim();
+        if (state == null || name.Length == 0) return;
+        state.SavedPresets[name] = state.Preset;
+        notice = T("Saved", name);
+    }
+
+    private static decimal AllocationSlider(Rect rect, decimal current, bool percent)
+    {
+        // Drawing a saved fractional or unusually large value must not change it.
+        int handle = (int)Math.Clamp(Math.Round(current), 0m, 100m);
+        string label = current.ToString(current > 9999 ? "0.#E+0" : "0.##") + (percent ? "%" : "");
+        int selected = Slider(rect, handle, percent, label);
+        return selected == handle ? current : selected;
+    }
+
+    private static int Slider(Rect rect, int current, bool percent, string? label = null)
     {
         const float number = 45;
-        Widgets.Label(new Rect(rect.x, rect.y + 3, number, rect.height), current + (percent ? "%" : ""));
+        Widgets.Label(new Rect(rect.x, rect.y + 3, number, rect.height), label ?? current + (percent ? "%" : ""));
         return (int)Math.Round(Widgets.HorizontalSlider(new Rect(rect.x + number, rect.y, rect.width - number, rect.height),
             current, 0, 100, roundTo: 1));
     }
 
     private void PresetMenu()
     {
-        void Select(StrategyPreset preset, string name)
-        {
-            state!.Preset = preset;
-            presetName = name;
-            RushFocus = null;
-            Invalidate(refreshCapture: false);
-        }
         var menu = new List<FloatMenuOption> {
-            new(T("DefaultPreset"), () => Select(ColonyWorkState.DefaultPreset(), ""))
+            new(T("DefaultPreset"), () => SelectPreset(ColonyWorkState.DefaultPreset(), ""))
         };
         foreach (var pair in state!.SavedPresets.OrderBy(p => p.Key, StringComparer.Ordinal))
-            menu.Add(new(pair.Key, () => Select(pair.Value, pair.Key)));
+            menu.Add(new(pair.Key, () => SelectPreset(pair.Value, pair.Key)));
         Find.WindowStack.Add(new FloatMenu(menu));
+    }
+
+    internal void SelectPreset(StrategyPreset preset, string name)
+    {
+        state!.Preset = preset;
+        presetName = name;
+        RushFocus = null;
+        Invalidate(refreshCapture: false);
     }
 
     private void RushFocusMenu()
@@ -577,7 +615,7 @@ public sealed class ColonyWorkWindow : MainTabWindow
         finally { Widgets.EndScrollView(); }
     }
 
-    private static string Percent(double value, double total) => (total > 0 ? value / total : 0).ToString("P0");
+    private static string Percent(double value, double total) => (total > 0 ? value / total : 0).ToString("0.##%");
     private static string Number(double value) => value.ToString("0.###", CultureInfo.CurrentCulture);
     private static string Priority(int value) => value == 0 ? T("Off") : value.ToString();
     private static string Direction(string id) => T("Direction_" + id);

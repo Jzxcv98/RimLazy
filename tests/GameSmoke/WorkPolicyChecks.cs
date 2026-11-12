@@ -21,6 +21,7 @@ internal static class WorkPolicyChecks
 
     internal static void Verify(Map map)
     {
+        DisabledMedicalChecks.Verify(map);
         var pawn = map.mapPawns.FreeColonistsSpawned.OrderBy(p => p.skills?.GetSkill(SkillDefOf.Cooking).TotallyDisabled != false)
             .First(p => !p.Downed);
         var handler = pawn.mindState.inspirationHandler;

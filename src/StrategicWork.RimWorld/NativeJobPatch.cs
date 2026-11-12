@@ -13,8 +13,11 @@ public sealed class NativeJobPatch : PatchOperation
         var pack = LoadedModManager.RunningModsListForReading.First(m =>
             m.PackageIdPlayerFacing.Equals("rimlazy.strategicwork", StringComparison.OrdinalIgnoreCase));
         var catalog = XElement.Load(Path.Combine(pack.RootDir, "WorkDetails", "Catalog.xml"));
+        var language = (Prefs.LangFolderName ?? "").Split('(', 2)[0].Trim();
+        var optionalLabels = XElement.Load(Path.Combine(pack.RootDir, "WorkDetails", "OptionalWorkLabels.xml"))
+            .Elements("language").FirstOrDefault(l => (string?)l.Attribute("id") == language);
         var jobTable = new JobXmlTable(xml);
-        jobTable.Apply(catalog, NativeJobSettings.Read());
+        jobTable.Apply(catalog, NativeJobSettings.Read(), optionalLabels);
         return true;
     }
 }
@@ -33,7 +36,7 @@ internal sealed class JobXmlTable
         }
     }
 
-    internal void Apply(XElement catalog, HashSet<string> enabled)
+    internal void Apply(XElement catalog, HashSet<string> enabled, XElement? optionalLabels)
     {
         var columns = catalog.Element("columns")!.Elements().ToArray();
         foreach (var column in columns)
@@ -41,6 +44,17 @@ internal sealed class JobXmlTable
             var id = A(column, "id");
             if (column.Attribute("optional") == null || enabled.Contains(id)) continue;
             if (indices.Remove(("WorkTypeDef", id), out var item)) defs.RemoveChild(item);
+        }
+        // DefInjected requires every target Def to exist. Set these conditional fields before parsing
+        // the surviving WorkTypeDefs; later translation packs can still override them normally.
+        if (optionalLabels != null)
+        {
+            foreach (var text in optionalLabels.Elements("work"))
+            {
+                string id = A(text, "id");
+                if (!enabled.Contains(id) || Get("WorkTypeDef", id) is not { } def) continue;
+                foreach (var field in text.Elements()) Set(def, field.Name.LocalName, field.Value);
+            }
         }
         foreach (var group in catalog.Elements("routes"))
         {

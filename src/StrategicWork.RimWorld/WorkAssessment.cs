@@ -18,12 +18,12 @@ internal sealed class WorkerAssessment(Pawn pawn, StatEvaluation stats, MapWorkO
     private const double ReferenceMoveSpeed = 4.6;
     private const double TicksPerSecond = 60;
     private readonly record struct Rate(double Value, double Travel, double? Poison);
+    private static readonly Evaluation Unavailable = new(new(0, 0, 0, null, 0, false), false, false);
 
     internal Evaluation Evaluate(WorkTypeDef work, OpportunitySet opportunities)
     {
         stats.BeginAssessment();
-        var fallback = Fallback(work);
-        if (!WorkProfile.CanDo(pawn, work)) return new(fallback, false, false);
+        if (!WorkProfile.CanDo(pawn, work)) return Unavailable;
         if (opportunities.Orders is { Count: > 0 } orders)
         {
             var candidates = new List<WorkAssessment>();
@@ -33,21 +33,26 @@ internal sealed class WorkerAssessment(Pawn pawn, StatEvaluation stats, MapWorkO
                 // The game scans bills in their configured order. Only compare the first feasible one per table.
                 foreach (var order in group)
                 {
-                    if (!map.AllowsWorker(pawn,order) || map.SelectSupplies(order,pawn) is not {} picks) continue;
+                    var recipe = order.Bill.recipe;
+                    if (!map.AllowsWorker(pawn,order) || !stats.IsAvailable(recipe.workSpeedStat) ||
+                        !stats.IsAvailable(recipe.efficiencyStat) ||
+                        (recipe.products.Any(p => p.thingDef.HasComp(typeof(CompFoodPoisonable))) &&
+                         !stats.IsAvailable(StatDefOf.FoodPoisonChance)) ||
+                        map.SelectSupplies(order,pawn) is not {} picks) continue;
                     candidates.Add(Production(order,picks));
                     known &= order.CanModel;
                     break;
                 }
             }
-            return Combine(candidates, fallback, known && !stats.Approximate);
+            return Combine(candidates, known && !stats.Approximate);
         }
         if (opportunities.Sites is {Count: > 0} sites)
         {
-            var results = sites.Where(s => WorkProfile.CapableOfGiver(pawn,s.Giver) &&
+            var results = sites.Where(s => WorkProfile.CapableOfGiver(pawn,s.Giver) && stats.IsAvailable(s.Speed) &&
                 map.CanAccess(pawn,s.Target) &&
                 (s.Target.TryGetComp<CompHackable>() is not {} hack || hack.CanHackNow(pawn).Accepted)).Select(Site).ToList();
-            if (opportunities.HasUnmodelledWork) results.Add(fallback);
-            return Combine(results, fallback, !opportunities.HasUnmodelledWork && sites.All(s=>s.Speed != null) && !stats.Approximate);
+            if (opportunities.HasUnmodelledWork && Fallback(work) is { Eligible: true } fallback) results.Add(fallback.Detail);
+            return Combine(results, !opportunities.HasUnmodelledWork && sites.All(s=>s.Speed != null) && !stats.Approximate);
         }
         if (work.defName == "FSFSurgeon" && opportunities.Capacity is > 0)
         {
@@ -58,9 +63,11 @@ internal sealed class WorkerAssessment(Pawn pawn, StatEvaluation stats, MapWorkO
                 var bill = patient.BillStack.Bills.OfType<Bill_Medical>().FirstOrDefault(b =>
                     !b.deleted && !b.suspended && b.recipe != null && b.PawnAllowedToStartAnew(pawn) &&
                     b.recipe.PawnSatisfiesSkillRequirements(pawn));
-                if (bill != null) results.Add(Surgery(patient,bill));
+                if (bill != null && stats.IsAvailable(StatDefOf.MedicalSurgerySuccessChance) &&
+                    stats.IsAvailable(bill.recipe.workSpeedStat ?? DefDatabase<StatDef>.GetNamed("MedicalOperationSpeed")))
+                    results.Add(Surgery(patient,bill));
             }
-            return Combine(results, fallback, !stats.Approximate);
+            return Combine(results, !stats.Approximate);
         }
         if (work.defName is "FSFHauling" or "Hauling" or "FSFDeliver")
         {
@@ -70,15 +77,15 @@ internal sealed class WorkerAssessment(Pawn pawn, StatEvaluation stats, MapWorkO
             if (routes.Count > 0)
             {
                 var samples = routes.Select(Haul).ToList();
-                return Combine(samples,fallback,!stats.Approximate);
+                return Combine(samples,!stats.Approximate);
             }
         }
-        return new(fallback,true,(Specialties.For(work)!=null || work.defName=="Research") && !stats.Approximate);
+        return Fallback(work);
     }
 
-    private static Evaluation Combine(List<WorkAssessment> rows, WorkAssessment fallback, bool comparable)
+    private static Evaluation Combine(List<WorkAssessment> rows, bool comparable)
     {
-        if (rows.Count == 0) return new(fallback, false, false);
+        if (rows.Count == 0) return Unavailable;
         var poisoned = rows.Where(x=>x.PoisonChance.HasValue).ToList();
         return new(new(rows.Average(x=>x.EstimatedPerformance), rows.Average(x=>x.EquippedPerformance),
             rows.Average(x=>x.TrainingGain), poisoned.Count==0 ? null : poisoned.Average(x=>x.PoisonChance!.Value),
@@ -187,11 +194,14 @@ internal sealed class WorkerAssessment(Pawn pawn, StatEvaluation stats, MapWorkO
             bill.recipe.workSkillLearnFactor,1-a.Travel),null,a.Travel,true);
     }
 
-    private WorkAssessment Fallback(WorkTypeDef work)
+    private Evaluation Fallback(WorkTypeDef work)
     {
         var role = Specialties.For(work);
         var speed = role == null ? null : DefDatabase<StatDef>.GetNamedSilentFail(role.Speed);
         var outcome = role?.Outcome is {} name ? DefDatabase<StatDef>.GetNamedSilentFail(name) : null;
+        var rateStat = speed ?? (work.defName == "Research" ? StatDefOf.ResearchSpeed : StatDefOf.WorkSpeedGlobal);
+        if (!stats.IsAvailable(rateStat) || !stats.IsAvailable(outcome) ||
+            (work.defName == "Cooking" && !stats.IsAvailable(StatDefOf.FoodPoisonChance))) return Unavailable;
         // A task without a known XP source receives zero learning credit; work tags alone prove no training.
         var learningSkill = Specialties.LearningSkill(work.defName);
         double travelFraction = work.defName switch {
@@ -204,7 +214,6 @@ internal sealed class WorkerAssessment(Pawn pawn, StatEvaluation stats, MapWorkO
         {
             double Stat(StatDef def) => equipped ? stats.EquippedEstimate(def) : stats.Value(def);
             double move = Math.Max(0.01,Stat(StatDefOf.MoveSpeed)/ReferenceMoveSpeed);
-            var rateStat = speed ?? (work.defName=="Research" ? StatDefOf.ResearchSpeed : StatDefOf.WorkSpeedGlobal);
             double action = rateStat==StatDefOf.MoveSpeed ? 1 : Math.Max(0.001,Stat(rateStat));
             // Frozen work units, with separate movement/operation phases. Carry capacity requires an actual item.
             double travel = travelFraction / move, time = travel + (1-travelFraction)/action;
@@ -214,8 +223,9 @@ internal sealed class WorkerAssessment(Pawn pawn, StatEvaluation stats, MapWorkO
             return new(yield * (1-poison.GetValueOrDefault()) / time,travel/time,poison);
         }
         var a=Calculate(false);var b=Calculate(true);
-        return new(a.Value,b.Value,Learn(learningSkill,Specialties.LearningFactor(work.defName),1-a.Travel),
+        var detail = new WorkAssessment(a.Value,b.Value,Learn(learningSkill,Specialties.LearningFactor(work.defName),1-a.Travel),
             a.Poison,a.Travel,true);
+        return new(detail, true, (role != null || work.defName == "Research") && !stats.Approximate);
     }
 
     private double Learn(SkillDef? skill,double xpFactor,double operationShare)

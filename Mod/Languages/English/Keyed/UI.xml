@@ -23,10 +23,11 @@
   <RimLazy_RushApplied>Rush plan applied. Changed {0} priorities. Your routine preset is saved separately.</RimLazy_RushApplied>
   <RimLazy_Applied>Applied {0} priority changes.</RimLazy_Applied>
   <RimLazy_Undone>Restored the priorities from before the last application.</RimLazy_Undone>
-  <RimLazy_AllocationHelp>Set a minimum share of work time for each goal. The weights divide the remaining time. Equal weights receive equal shares.</RimLazy_AllocationHelp>
+  <RimLazy_AllocationHelp>Minimum shares are allocated first. Weights divide any time left. Target share shows the resulting allocation.</RimLazy_AllocationHelp>
   <RimLazy_Direction>Goal</RimLazy_Direction>
   <RimLazy_Minimum>Minimum share</RimLazy_Minimum>
   <RimLazy_Weight>Remaining weight</RimLazy_Weight>
+  <RimLazy_TargetShare>Target share</RimLazy_TargetShare>
   <RimLazy_TrainingLimit>Training potential</RimLazy_TrainingLimit>
   <RimLazy_TrainingHint>Maximum estimated output loss you accept per goal to train workers. Use 0% to select by current performance alone.</RimLazy_TrainingHint>
   <RimLazy_Direction_survival>Food and upkeep</RimLazy_Direction_survival>
@@ -34,7 +35,8 @@
   <RimLazy_Direction_research>Research</RimLazy_Direction_research>
   <RimLazy_Direction_industry>Industry and trade</RimLazy_Direction_industry>
   <RimLazy_Direction_defense>Defense preparation</RimLazy_Direction_defense>
-  <RimLazy_InvalidMinimum>Minimum shares total {0}%. Reduce them to 100% or less to continue.</RimLazy_InvalidMinimum>
+  <RimLazy_NormalizedMinimum>Minimum shares total {0}% and are scaled proportionally to 100%. No time remains for the weights.</RimLazy_NormalizedMinimum>
+  <RimLazy_NoSpareForFocus>Minimum shares allocate all work time. The rush uses the same target shares.</RimLazy_NoSpareForFocus>
   <RimLazy_MinimumTotal>Total minimum share: {0}%</RimLazy_MinimumTotal>
   <RimLazy_PreserveRemainder>Keep existing priorities for spare labor when all remaining weights are zero</RimLazy_PreserveRemainder>
   <RimLazy_ZeroKeep>With all weights at zero, the remaining {0}% has no strategic target. Existing priorities are kept for spare labor.</RimLazy_ZeroKeep>

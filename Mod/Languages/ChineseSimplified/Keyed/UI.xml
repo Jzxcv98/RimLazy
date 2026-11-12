@@ -23,10 +23,11 @@
   <RimLazy_RushApplied>已应用本次赶工方案，修改 {0} 格优先级。常态预设保持原设置。</RimLazy_RushApplied>
   <RimLazy_Applied>已修改 {0} 格优先级。</RimLazy_Applied>
   <RimLazy_Undone>已恢复到上次应用前的优先级。</RimLazy_Undone>
-  <RimLazy_AllocationHelp>先为各方向设置最低工时占比。剩余工时按权重比例分配，权重相等的方向平分。</RimLazy_AllocationHelp>
+  <RimLazy_AllocationHelp>先分配最低投入，再按权重分配剩余工时。目标占比显示本次计算采用的比例。</RimLazy_AllocationHelp>
   <RimLazy_Direction>战略方向</RimLazy_Direction>
   <RimLazy_Minimum>最低工时占比</RimLazy_Minimum>
   <RimLazy_Weight>剩余工时权重</RimLazy_Weight>
+  <RimLazy_TargetShare>目标占比</RimLazy_TargetShare>
   <RimLazy_TrainingLimit>培养潜力</RimLazy_TrainingLimit>
   <RimLazy_TrainingHint>为培养人手，每个方向最多可接受的本期预计表现降幅。设为 0% 时只按当前表现选人。</RimLazy_TrainingHint>
   <RimLazy_Direction_survival>生存与日常维护</RimLazy_Direction_survival>
@@ -34,7 +35,8 @@
   <RimLazy_Direction_research>科研</RimLazy_Direction_research>
   <RimLazy_Direction_industry>工业与经济</RimLazy_Direction_industry>
   <RimLazy_Direction_defense>防务准备</RimLazy_Direction_defense>
-  <RimLazy_InvalidMinimum>最低投入合计 {0}%，请调整至 100% 以内才能分配。</RimLazy_InvalidMinimum>
+  <RimLazy_NormalizedMinimum>最低投入合计 {0}%，已按比例折算为 100%。本次没有剩余工时可分。</RimLazy_NormalizedMinimum>
+  <RimLazy_NoSpareForFocus>最低投入已分配全部工时，本次赶工沿用目标占比。</RimLazy_NoSpareForFocus>
   <RimLazy_MinimumTotal>最低投入合计 {0}%</RimLazy_MinimumTotal>
   <RimLazy_PreserveRemainder>所有剩余权重都为零时，空余劳力保留原有优先级</RimLazy_PreserveRemainder>
   <RimLazy_ZeroKeep>当前所有权重为零，剩余 {0}% 工时没有战略目标，空余劳力会保留现有优先级。</RimLazy_ZeroKeep>

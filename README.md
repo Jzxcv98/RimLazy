@@ -1,11 +1,11 @@
 # RimLazy · 殖民地分工
 
-RimWorld 1.7 的本地工作分配 MOD。v0.3 支持培养潜力和单次赶工，内置细分岗位和可配置的工作优先级，默认六档。你决定各战略需要的人力，以及愿意为培养让出多少当期表现。RimLazy 根据地图上的工作、殖民者和设备生成工作表。
+RimWorld 1.7 的本地工作分配 MOD。v0.3.1 支持培养潜力和单次赶工，内置细分岗位和可配置的工作优先级，默认六档。你决定各战略需要的人力，以及愿意为培养让出多少当期表现。RimLazy 根据地图上的工作、殖民者和设备生成工作表。
 
 ## 怎么用
 
 1. 将发行包中的 `RimLazy` 文件夹放入游戏的 `Mods`，启用 **Harmony** 和 **RimLazy · Colony Work Planner**，Harmony 放在前面。
-2. 进入殖民地，在原版「工作」页勾选手动优先级，再点底栏 **分工**。可以直接使用均衡预设，也可以调整每个方向的最低工时占比和剩余工时权重。两者都允许为零。
+2. 进入殖民地，在原版「工作」页勾选手动优先级，再点底栏 **分工**。可以直接使用均衡预设，也可以调整每个方向的最低工时占比和剩余工时权重。两者都允许为零。最低投入总和超过 100% 时会按比例归一化。比如输入 15、5、100 后，目标占比分别为 12.50%、4.17%、83.33%。原始数值保留在预设中。
 3. 调整 **培养潜力**，然后点 **常态预览**。默认 0% 使用当期表现参考方案。10% 表示各有投入且可比较的战略方向最多允许预计表现下降 10%，实际让出的可以更少。培养值来自适用任务的学习机会。结果页显示参考方案、本案、训练收益和逐格变化。
 4. 临时需要冲产量，点 **本次赶工**。它按接下来一个游戏小时、实际配装和零培养计算。可选一个方向取得本次剩余劳力，原战略的最低份额继续有效。检查预览后点 **应用赶工方案**；日常方案用 **计算并应用常态方案**。培养滑块与命名预设仍保存原值。
 5. 在「优先级锁定」保留单格，在「工作类型」保留整列。**撤销上次应用** 支持存读档。若其他人或 MOD 已改动相关格子，会提示冲突。
@@ -31,11 +31,11 @@ RimWorld 1.7 的本地工作分配 MOD。v0.3 支持培养潜力和单次赶工�
 ./scripts/build-mod.ps1 -GameDir 'D:/Steam/steamapps/common/RimWorld'
 ```
 
-构建脚本读取本机 1.7 游戏程序集及同一 Steam 库的 Harmony 1.7。非 Steam 布局可将环境变量 `HARMONY_DIR` 指向 Harmony 模组根目录。发行包在 `.artifacts/RimLazy-0.3.0.zip`。核心测试可独立运行。Windows 上可用 Python 3.12+ 执行隔离实机测试。
+构建脚本读取本机 1.7 游戏程序集及同一 Steam 库的 Harmony 1.7。非 Steam 布局可将环境变量 `HARMONY_DIR` 指向 Harmony 模组根目录。发行包在 `.artifacts/RimLazy-0.3.1.zip`。核心测试可独立运行。Windows 上可用 Python 3.12+ 执行隔离实机测试。
 
 ```powershell
 python scripts/smoke-game.py --game 'D:/Steam/steamapps/common/RimWorld'
 python scripts/smoke-game.py --game 'D:/Steam/steamapps/common/RimWorld' --all-splits
 ```
 
-测试运行在临时游戏副本和隔离存档中。可用 `--player-package` 指向已解压的发行目录以复核运行的 DLL。[v0.3 验收](docs/v0.3-validation.md) · [分工设计](docs/work-assignment-factors-1.7.md) · [v0.2 验收](docs/v0.2-validation.md)
+测试运行在临时游戏副本和隔离存档中。可用 `--player-package` 指向已解压的发行目录以复核运行的 DLL。[0.3.1 手测问题回归](docs/v0.3.1-validation.md) · [v0.3 验收](docs/v0.3-validation.md) · [分工设计](docs/work-assignment-factors-1.7.md) · [v0.2 验收](docs/v0.2-validation.md)

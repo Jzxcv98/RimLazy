@@ -114,6 +114,7 @@ public sealed class PlannerProbe(Map map) : MapComponent(map)
             "Loaded expected external mod list");
         Find.TickManager.Pause();
         Find.PlaySettings.useWorkPriorities = true;
+        if (Environment.GetEnvironmentVariable("RIMLAZY_MANUAL_ZH") == "1") ManualChineseWorkChecks.Verify();
         var snapshot = Capture(state);
         workers = snapshot.Pawns.Count; columns = snapshot.Works.Count; maxPriority = snapshot.MaxPriority;
         Check(workers > 0 && maxPriority == 6, "RimLazy provides six priority levels");
@@ -125,6 +126,7 @@ public sealed class PlannerProbe(Map map) : MapComponent(map)
         Find.MainTabsRoot.SetCurrentTab(tab, false);
         Check(Find.MainTabsRoot.OpenTab == tab && tab.TabWindow is ColonyWorkWindow, "Opened the Planner tab after the Work tab");
         var window = (ColonyWorkWindow)tab.TabWindow;
+        if (Scenario is "native" or "legacy-settings") NormalizedBudgetChecks.Verify(map, state, window);
         if (Scenario is not ("change-layout" or "migration"))
             Check(state.Preset.TrainingLossLimit == 0, "New map starts with zero training loss");
         state.SetTrainingLossPercent(23);
@@ -170,6 +172,7 @@ public sealed class PlannerProbe(Map map) : MapComponent(map)
 
     private void VerifyReload(ColonyWorkState state)
     {
+        if (Scenario is "native" or "legacy-settings") NormalizedBudgetChecks.VerifySavedInput(state);
         VerifyTrainingPreset(state);
         var restored = state.LastUndo;
         Check(restored is { Edits.Count: > 0 } && restored.Edits.Count == edits, "Undo journal survives reload");
@@ -187,6 +190,7 @@ public sealed class PlannerProbe(Map map) : MapComponent(map)
             WorkPolicyChecks.Verify(map);
             RealOrderChecks.Verify(map);
         }
+        else if (Scenario == "legacy-settings") DisabledMedicalChecks.Verify(map);
         Finish(null);
     }
 

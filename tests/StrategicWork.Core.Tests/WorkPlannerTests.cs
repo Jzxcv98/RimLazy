@@ -172,15 +172,57 @@ public sealed class WorkPlannerTests
     }
 
     [TestMethod]
-    public void MinimumsAndWeightsUseDistinctBudgetsAndInvalidMinimumsAreRejected()
+    public void MinimumsAndWeightsUseDistinctBudgetsEvenWhenRelativeWeightsExceedOneHundred()
     {
-        var policy = Policy(new("a", .25m, 1), new("b", .25m, 3));
+        var policy = Policy(new("a", .25m, 100), new("b", .25m, 300));
         var report = WorkPlanner.Plan([Pawn("p")], [], policy, 6);
         Assert.AreEqual(.375, report.Strategies[0].TargetLabor, 1e-8);
         Assert.AreEqual(.625, report.Strategies[1].TargetLabor, 1e-8);
         Assert.AreEqual(ShortfallReason.NoMappedWork, report.Strategies[1].Reason);
+    }
+
+    [TestMethod]
+    [DataRow(false)]
+    [DataRow(true)]
+    public void OneHundredTwentyPercentUsesTheEnteredRatioAndLeavesNoLaborForWeights(bool rush)
+    {
+        var raw = Policy(new("survival", .15m, 35), new("expansion", .05m, 25), new("research", 0, 15),
+            new("industry", 1m, 25), new("defense", 0, 0));
+        var before = raw.Strategies.ToArray();
+        var works = before.Select(s => new WorkColumn(s.Id, s.Id)).ToArray();
+        var people = Enumerable.Range(0, 24).Select(i => Pawn($"p{i}", before.Select(s =>
+            (s.Id, new WorkCell(3, true, 1))).ToArray())).ToArray();
+        var result = WorkPlanner.Plan(people, works, raw, 6, rush);
+        var goals = result.Strategies.ToDictionary(s => s.Id, s => s.TargetLabor);
+        Assert.AreEqual(3d, goals["survival"], 1e-9);
+        Assert.AreEqual(1d, goals["expansion"], 1e-9);
+        Assert.AreEqual(20d, goals["industry"], 1e-9);
+        Assert.AreEqual(0d, goals["research"]);
+        Assert.AreEqual(0d, goals["defense"]);
+        foreach (var strategy in result.Strategies)
+            Assert.AreEqual(strategy.TargetLabor, strategy.EstimatedLabor, 1e-8);
+        CollectionAssert.AreEqual(before, raw.Strategies.ToArray());
+    }
+
+    [TestMethod]
+    public void ExactlyOneHundredPercentIgnoresRemainingWeightsAndKeepsRawMinimums()
+    {
+        var policy = Policy(new("work", .35m, 0), new("more", .65m, 0), new("extra", 0, decimal.MaxValue));
+        var budget = StrategyBudget.From(policy.Strategies);
+        Assert.IsFalse(budget.IsNormalized);
+        Assert.AreEqual(0m, budget.RemainingShare);
+        CollectionAssert.AreEqual(new[] { .35, .65, 0 }, policy.Strategies.Select(budget.TargetFor).ToArray());
+    }
+
+    [TestMethod]
+    public void NegativeWeightsAndOutOfRangeIndividualMinimumsAreStillRejected()
+    {
         Assert.ThrowsException<ArgumentException>(() =>
-            WorkPlanner.Plan([Pawn("p")], [], Policy(new("a", .8m, 0), new("b", .4m, 0)), 6));
+            WorkPlanner.Plan([Pawn("p")], [], Policy(new StrategyAllocation("a", 1.01m, 0)), 6));
+        Assert.ThrowsException<ArgumentException>(() =>
+            WorkPlanner.Plan([Pawn("p")], [], Policy(new StrategyAllocation("a", -.1m, 0)), 6));
+        Assert.ThrowsException<ArgumentException>(() =>
+            WorkPlanner.Plan([Pawn("p")], [], Policy(new StrategyAllocation("a", 0, -1)), 6));
     }
 
     [TestMethod]

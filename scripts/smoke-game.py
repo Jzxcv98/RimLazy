@@ -22,6 +22,7 @@ def main():
     mode.add_argument("--legacy-settings", type=Path, help="Verify the player's matching Complex Jobs XML Extensions settings are imported")
     parser.add_argument("--compare-catalog", type=Path, help="Compare all work-giver assignments with another run's WorkCatalog.json")
     parser.add_argument("--player-package", type=Path, help="Test this exact packaged or installed RimLazy directory")
+    parser.add_argument("--manual-zh", action="store_true", help="Use the Simplified Chinese and developer settings from the manual regression")
     args = parser.parse_args()
     repo = Path(__file__).resolve().parents[1]
     game = args.game.resolve()
@@ -94,8 +95,17 @@ def main():
         if not expected:
             parser.error("The source QA save has no named priority snapshots; use a fresh default native run")
         (profile / "named-priorities.json").write_text(json.dumps(expected), encoding="utf-8")
+    if args.manual_zh:
+        config = profile / "Config"
+        config.mkdir(exist_ok=True)
+        prefs = ElementTree.Element("PrefsData")
+        ElementTree.SubElement(prefs, "devMode").text = "True"
+        ElementTree.SubElement(prefs, "langFolderName").text = "ChineseSimplified (简体中文)"
+        ElementTree.ElementTree(prefs).write(config / "Prefs.xml", encoding="utf-8", xml_declaration=True)
     sdk = Path(os.environ["USERPROFILE"]) / "AppData/Local/RimLazy/dotnet/dotnet.exe"
     env = os.environ | {"DOTNET_CLI_HOME": str(local / "dotnet-cli"), "RIMLAZY_GAME_SMOKE": scenario}
+    if args.manual_zh:
+        env["RIMLAZY_MANUAL_ZH"] = "1"
     subprocess.run([str(sdk) if sdk.exists() else "dotnet", "build", "tests/GameSmoke/GameSmoke.csproj", "-c", "Release",
                     f"-p:RimWorldDir={game}", f"-p:HarmonyDir={harmony.resolve()}", "-m:1", "--disable-build-servers", "--nologo"], env=env, cwd=repo, check=True)
     # An independent runtime also keeps temporary test assemblies out of the installed Mods folder.
@@ -158,6 +168,11 @@ def main():
     report["gameErrors"] = errors[:10]
     if errors:
         report["ok"] = False
+    if args.manual_zh:
+        with (profile / "console.log").open(encoding="utf-8", errors="replace") as log_lines:
+            report["translationWarnings"] = [
+                line.strip() for line in log_lines if " WARN " in line and "Translation data for language" in line
+            ]
     if args.compare_catalog and report["ok"]:
         expected = json.loads(args.compare_catalog.read_text(encoding="utf-8-sig"))
         actual = json.loads((profile / "WorkCatalog.json").read_text(encoding="utf-8-sig"))

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<optionalWorkLabels>
+  <language id="ChineseSimplified">
+    <work id="FSFTaming">
+      <labelShort>驯服动物</labelShort>
+      <pawnLabel>驯服动物人员</pawnLabel>
+      <gerundLabel>驯服动物</gerundLabel>
+      <verb>驯服动物</verb>
+      <description>驯服被标记的野生动物。</description>
+    </work>
+    <work id="FSFSlaughter">
+      <labelShort>宰杀动物</labelShort>
+      <pawnLabel>宰杀动物人员</pawnLabel>
+      <gerundLabel>宰杀动物</gerundLabel>
+      <verb>宰杀动物</verb>
+      <description>宰杀被指定的家畜。</description>
+    </work>
+    <work id="FSFConvert">
+      <labelShort>信仰转化</labelShort>
+      <pawnLabel>信仰转化人员</pawnLabel>
+      <gerundLabel>信仰转化</gerundLabel>
+      <verb>信仰转化</verb>
+      <description>转化囚犯的意识形态。</description>
+    </work>
+    <work id="FSFPrisonCare">
+      <labelShort>囚犯照护</labelShort>
+      <pawnLabel>囚犯照护人员</pawnLabel>
+      <gerundLabel>囚犯照护</gerundLabel>
+      <verb>囚犯照护</verb>
+      <description>为囚犯递送食物和照护物资。</description>
+    </work>
+    <work id="FSFHack">
+      <labelShort>入侵终端</labelShort>
+      <pawnLabel>入侵终端人员</pawnLabel>
+      <gerundLabel>入侵终端</gerundLabel>
+      <verb>入侵终端</verb>
+      <description>入侵指定的终端或可破解目标。</description>
+    </work>
+    <work id="FSFTeach">
+      <labelShort>教学</labelShort>
+      <pawnLabel>教师</pawnLabel>
+      <gerundLabel>教学</gerundLabel>
+      <verb>教学</verb>
+      <description>教授儿童学习课程。</description>
+    </work>
+    <work id="FSFSelfTend">
+      <labelShort>自行包扎</labelShort>
+      <pawnLabel>自行包扎人员</pawnLabel>
+      <gerundLabel>自行包扎</gerundLabel>
+      <verb>自行包扎</verb>
+      <description>在个人医疗设置允许时为自己包扎伤口。</description>
+    </work>
+    <work id="FSFRescue">
+      <labelShort>救援</labelShort>
+      <pawnLabel>救援人员</pawnLabel>
+      <gerundLabel>救援</gerundLabel>
+      <verb>救援</verb>
+      <description>将倒地者转移到安全的床铺。</description>
+    </work>
+    <work id="FSFPollution">
+      <labelShort>清理污染</labelShort>
+      <pawnLabel>清理污染人员</pawnLabel>
+      <gerundLabel>清理污染</gerundLabel>
+      <verb>清理污染</verb>
+      <description>清理指定区域内的污染。</description>
+    </work>
+    <work id="FSFSnow">
+      <labelShort>清雪</labelShort>
+      <pawnLabel>清雪人员</pawnLabel>
+      <gerundLabel>清雪</gerundLabel>
+      <verb>清雪</verb>
+      <description>清除清雪区内的积雪。</description>
+    </work>
+    <work id="FSFMerge">
+      <labelShort>合并物堆</labelShort>
+      <pawnLabel>合并物堆人员</pawnLabel>
+      <gerundLabel>合并物堆</gerundLabel>
+      <verb>合并物堆</verb>
+      <description>将存储区内不满的物堆合并。</description>
+    </work>
+    <work id="FSFPaint">
+      <labelShort>涂装</labelShort>
+      <pawnLabel>涂装人员</pawnLabel>
+      <gerundLabel>涂装</gerundLabel>
+      <verb>涂装</verb>
+      <description>为地面和建筑涂漆或去除油漆。</description>
+    </work>
+    <work id="FSFMechanoids">
+      <labelShort>机械族作业</labelShort>
+      <pawnLabel>机械族作业人员</pawnLabel>
+      <gerundLabel>机械族作业</gerundLabel>
+      <verb>机械族作业</verb>
+      <description>维修机械族并完成相关维护任务。</description>
+    </work>
+    <work id="FSFPruning">
+      <labelShort>修剪</labelShort>
+      <pawnLabel>修剪人员</pawnLabel>
+      <gerundLabel>修剪</gerundLabel>
+      <verb>修剪</verb>
+      <description>照料需要修剪的植物。</description>
+    </work>
+    <work id="FSFSmoothing">
+      <labelShort>打磨岩石</labelShort>
+      <pawnLabel>打磨岩石人员</pawnLabel>
+      <gerundLabel>打磨岩石</gerundLabel>
+      <verb>打磨岩石</verb>
+      <description>打磨标记的天然岩墙和岩石地面。</description>
+    </work>
+  </language>
+</optionalWorkLabels>

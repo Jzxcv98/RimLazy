@@ -104,7 +104,8 @@ internal static class EquipmentAdvice
     private static double Difference(Worker worker, Duty duty, Thing item, bool remove)
     {
         var poison = duty.Cooking ? DefDatabase<StatDef>.GetNamedSilentFail("FoodPoisonChance") : null;
-        if (!Affects(duty,item)) return 0;
+        if (!Affects(duty,item) || !worker.Stats.IsAvailable(duty.Speed) ||
+            !worker.Stats.IsAvailable(duty.Outcome) || !worker.Stats.IsAvailable(poison)) return 0;
         double Utility(bool changed)
         {
             float Read(StatDef stat) => !changed ? worker.Stats.EquippedEstimate(stat) :

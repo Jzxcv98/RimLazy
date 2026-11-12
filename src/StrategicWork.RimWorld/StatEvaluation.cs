@@ -21,6 +21,7 @@ internal sealed class StatEvaluation
     private readonly Dictionary<(StatDef, Conditions), float> memo = [];
     private readonly Dictionary<(StatDef, Conditions), (bool Approximate, bool Gear)> diagnostics = [];
     private readonly Dictionary<StatDef, float> actual = [];
+    private readonly Dictionary<StatDef, bool> availability = [];
     private readonly Dictionary<StatDef, float> controls = [];
     [ThreadStatic] private static StatEvaluation? evaluating;
     private Conditions conditions;
@@ -29,6 +30,15 @@ internal sealed class StatEvaluation
     public bool Approximate { get; private set; }
     public bool EquipmentMatters { get; private set; }
     public void BeginAssessment() { Approximate = false; EquipmentMatters = false; }
+
+    // Null means that the particular recipe or work site has no such stat requirement.
+    internal bool IsAvailable(StatDef? stat)
+    {
+        if (stat == null) return true;
+        if (!availability.TryGetValue(stat, out bool enabled))
+            availability[stat] = enabled = !stat.Worker.IsDisabledFor(pawn);
+        return enabled;
+    }
 
     public StatEvaluation(Pawn pawn, bool rush, int horizonTicks)
     {
@@ -97,6 +107,7 @@ internal sealed class StatEvaluation
 
     private float Compute(StatDef stat, Conditions query)
     {
+        if (!IsAvailable(stat)) { Approximate = true; return 0; }
         if ((query.Personal && indirectGear) ||
             (unfamiliarInspiration && pawn.InspirationDef is { } inspiration &&
              (inspiration.statOffsets.GetStatOffsetFromList(stat) != 0 || inspiration.statFactors.GetStatFactorFromList(stat) != 1)))
@@ -238,7 +249,11 @@ internal sealed class StatEvaluation
         private static float Dependency(Thing thing, StatDef stat, bool post, int stale)
         {
             var e = evaluating!;
-            return thing == e.pawn && post ? e.Evaluate(stat, e.conditions) : thing.GetStatValue(stat, post, stale);
+            if (thing != e.pawn) return thing.GetStatValue(stat, post, stale);
+            if (post) return e.Evaluate(stat, e.conditions);
+            if (e.IsAvailable(stat)) return thing.GetStatValue(stat, false, stale);
+            e.Approximate = true;
+            return 0;
         }
         private static HediffStage? Stage(Hediff effect)
         {

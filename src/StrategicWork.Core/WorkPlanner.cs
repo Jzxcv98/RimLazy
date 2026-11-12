@@ -15,11 +15,9 @@ public static partial class WorkPlanner
         var strategies = preset.Strategies.OrderBy(x => x.Id, StringComparer.Ordinal).ToArray();
         Validate(people, works, strategies);
         var total = people.Sum(x => x.Labor);
-        var minimums = strategies.Select(x => (double)x.MinimumShare * total).ToArray();
-        var weight = strategies.Sum(x => (double)x.RelativeWeight);
-        var remainder = Math.Max(0, total - minimums.Sum());
-        var targets = strategies.Select((x, i) => minimums[i] +
-            (weight > 0 ? remainder * (double)x.RelativeWeight / weight : 0)).ToArray();
+        var budget = StrategyBudget.From(strategies);
+        var minimums = strategies.Select(s => (double)budget.MinimumFor(s) * total).ToArray();
+        var targets = strategies.Select(s => budget.TargetFor(s) * total).ToArray();
         var groupIds = strategies.Select((x, i) => (x.Id, i)).ToDictionary(x => x.Id, x => x.i, StringComparer.Ordinal);
         int[] groups = works.Select(w => w.StrategyId is not null && groupIds.TryGetValue(w.StrategyId, out int g) ? g : -1).ToArray();
         var cells = new WorkCell?[people.Length, works.Length];
@@ -40,7 +38,7 @@ public static partial class WorkPlanner
         var limits = works.Select((w, i) => w.OutputDemand == 0 ? 0 :
             Math.Min(potential[i], w.Capacity ?? (groups[i] >= 0 ? total : 0))).ToArray();
         var model = new Model(people, works, cells, groups, limits, targets, minimums, maxPriority);
-        bool preserveRemainder = weight == 0 && remainder > Epsilon &&
+        bool preserveRemainder = !budget.HasRelativeWeights && total * (double)budget.RemainingShare > Epsilon &&
             preset.UnweightedRemainder == UnweightedRemainder.PreserveExisting;
         var reference = model.SolveTable(preserveRemainder, 0);
         var comparison = new TrainingComparison(people, works, cells, groups, targets, reference,
@@ -76,9 +74,6 @@ public static partial class WorkPlanner
             works.Any(x => x.Capacity is double cap && (!double.IsFinite(cap) || cap < 0) ||
                            x.OutputDemand is double demand && (!double.IsFinite(demand) || demand < 0)))
             throw new ArgumentException("Labor and capacity must be finite and nonnegative.");
-        if (strategies.Any(x => x.MinimumShare < 0 || x.MinimumShare > 1 || x.RelativeWeight < 0) ||
-            strategies.Sum(x => x.MinimumShare) > 1)
-            throw new ArgumentException("Minimum shares must total at most 100%, and weights must be nonnegative.");
     }
 
     private static bool CanWork(WorkCell? c) => c is { Eligible: true, Current: >= 0 } && (!c.Locked || c.Current > 0);
