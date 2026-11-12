@@ -3,14 +3,23 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <RimWorldDir Condition="'$(RimWorldDir)' == ''">$(RIMWORLD_DIR)</RimWorldDir>
+    <HarmonyDir Condition="'$(HarmonyDir)' == ''">$(HARMONY_DIR)</HarmonyDir>
+    <HarmonyDir Condition="'$(HarmonyDir)' == ''">$(RimWorldDir)/../../workshop/content/294100/2009463077</HarmonyDir>
   </PropertyGroup>
   <Target Name="CheckGameInstall" BeforeTargets="ResolveAssemblyReferences" Condition="!Exists('$(RimWorldDir)/Assembly-CSharp.dll')">
     <Error Text="Set RIMWORLD_DIR or -p:RimWorldDir to the root of a RimWorld 1.7 install." />
   </Target>
+  <Target Name="CheckHarmonyInstall" BeforeTargets="ResolveAssemblyReferences" Condition="!Exists('$(HarmonyDir)/1.7/Assemblies/0Harmony.dll')">
+    <Error Text="Set HARMONY_DIR or -p:HarmonyDir to the Harmony mod directory containing 1.7/Assemblies/0Harmony.dll." />
+  </Target>
   <ItemGroup>
     <ProjectReference Include="../StrategicWork.Core/StrategicWork.Core.csproj" />
+    <Reference Include="0Harmony">
+      <HintPath>$(HarmonyDir)/1.7/Assemblies/0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="Assembly-CSharp;UnityStubs;Waylith;Waylith.UnityCompat;Brutal.Core.Numerics;Brutal.Core.Maths;RimWorld">
       <HintPath>$(RimWorldDir)/%(Identity).dll</HintPath>
       <Private>false</Private>

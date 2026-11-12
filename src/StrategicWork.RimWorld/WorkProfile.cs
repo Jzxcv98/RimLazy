@@ -21,11 +21,13 @@ internal static class WorkProfile
     {
         switch (work.defName)
         {
-            case "Firefighter": case "Patient": case "PatientBedRest": case "BasicWorker": return null;
+            case "Firefighter": case "Patient": case "PatientBedRest": case "BasicWorker":
+            case "FSFSelfTend": case "FSFRescue": return null;
             case "Warden": case "Childcare": case "Fishing": return "survival";
             case "DarkStudy": return "research";
-            case "Art": case "Hauling": case "Cleaning": return "industry";
+            case "Art": return "industry";
         }
+        if (Specialties.For(work) is { } role) return role.Strategy;
         var tags = work.workTags;
         if ((tags & WorkTags.Hunting) != 0) return "defense";
         if ((tags & (WorkTags.Caring | WorkTags.Cooking | WorkTags.PlantWork | WorkTags.Animals)) != 0) return "survival";
@@ -53,6 +55,8 @@ internal static class WorkProfile
         double training = records is { Count: > 0 }
             ? records.Average(s => s.passion == Passion.Major ? 0.06 : s.passion == Passion.Minor ? 0.03 : 0)
             : 0;
+        if (Specialties.For(work) is { } role)
+            return (0.4 + (aptitude + training) * role.SkillWeight) * Specialties.Performance(pawn, role);
         var stat = work.defName switch
         {
             "Research" => StatDefOf.ResearchSpeed, "Construction" => StatDefOf.ConstructionSpeed,
@@ -72,8 +76,17 @@ internal static class WorkProfile
         if (givers is not { Count: > 0 }) return new(null);
         if (givers.All(g => g.giverClass == typeof(WorkGiver_DoBill) && g.fixedBillGiverDefs is { Count: > 0 }))
             return ReadBillStations(map, givers);
-        if (givers.Any(g => g.giverClass == typeof(WorkGiver_Researcher)))
+        if (givers.All(g => g.giverClass == typeof(WorkGiver_DeepDrill)))
+            return new(map.listerBuildings.AllBuildingsColonistOfDef(ThingDefOf.DeepDrill).Count());
+        if (givers.Any(g => g.giverClass == typeof(WorkGiver_Researcher)) ||
+            givers.All(g => g.giverClass == typeof(WorkGiver_OperateScanner)))
             return ReadResearchStations(map, givers);
+        if (work.defName == "FSFSurgeon" && givers.All(g => g.defName is
+            "DoBillsMedicalHumanOperation" or "DoBillsMedicalAnimalOperation" or "TakeToBedToOperate"))
+        {
+            // One operation at a time per patient. Respect the game's own list of pending operations.
+            return new(map.mapPawns.SpawnedPawnsWhoShouldHaveSurgeryDoneNow.Count);
+        }
         return new(null);
     }
 

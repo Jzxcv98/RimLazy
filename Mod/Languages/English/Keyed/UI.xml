@@ -34,7 +34,7 @@
   <RimLazy_DefaultPreset>Balanced (default)</RimLazy_DefaultPreset>
   <RimLazy_NoCapture>Could not read work types. Preview again to refresh.</RimLazy_NoCapture>
   <RimLazy_Detected>Active priority range: 1–{0}. Source: {1}</RimLazy_Detected>
-  <RimLazy_OverrideHint>Planning limit (0 = auto). To detect an unknown mod's highest tier, set one cell to that tier in the Work tab and preview again.</RimLazy_OverrideHint>
+  <RimLazy_OverrideHint>Planning limit for this map. Use 0 for the full work-table range. Change the number of work-table levels in RimLazy mod settings.</RimLazy_OverrideHint>
   <RimLazy_MappingHelp>Assign work types to goals. Columns set to “Keep existing” retain each colonist's current priority.</RimLazy_MappingHelp>
   <RimLazy_KeepColumn>Keep existing</RimLazy_KeepColumn>
   <RimLazy_Automatic>Auto · {0}</RimLazy_Automatic>

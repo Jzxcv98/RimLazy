@@ -44,7 +44,7 @@ public static class ColonyAdapter
             var availability = WorkProfile.ReadAvailability(map, def);
             demand.Add(def, availability);
             works.Add(new(def.defName, def.labelShort ?? def.LabelCap.ToString(), strategy));
-            columns.Add(new(def.defName, strategy, def.naturalPriority, availability.Capacity));
+            columns.Add(new(def.defName, strategy, def.naturalPriority, availability.Capacity, Specialties.For(def)?.Family));
         }
 
         var pawns = new List<ColonyPawn>(workers.Count);

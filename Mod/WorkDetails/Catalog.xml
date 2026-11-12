@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="utf-8"?>
+<workCatalog>
+  <columns>
+    <column id="FSFNurse" childAge="7" earlyAge="4" inherits="Doctor" />
+    <column id="FSFSurgeon" childAge="10" earlyAge="7" inherits="Doctor" />
+    <column id="FSFRearming" childAge="3" earlyAge="3" inherits="Hauling" />
+    <column id="FSFTraining" childAge="7" earlyAge="4" inherits="Handling" />
+    <column id="FSFButcher" childAge="7" earlyAge="4" inherits="Cooking" />
+    <column id="FSFRepair" childAge="10" earlyAge="7" inherits="Construction" />
+    <column id="FSFDeconstruct" childAge="10" earlyAge="7" inherits="Construction" />
+    <column id="FSFHarvesting" childAge="7" earlyAge="4" inherits="PlantCutting" />
+    <column id="FSFDrilling" childAge="7" earlyAge="4" inherits="Mining" />
+    <column id="FSFDrugs" childAge="7" earlyAge="4" inherits="Crafting" />
+    <column id="FSFMachining" childAge="13" earlyAge="10" inherits="Smithing" />
+    <column id="FSFFabrication" childAge="13" earlyAge="10" inherits="Smithing" />
+    <column id="FSFRefining" childAge="7" earlyAge="4" inherits="Crafting" />
+    <column id="FSFProduction" childAge="3" earlyAge="3" inherits="Hauling" />
+    <column id="FSFSmelt" childAge="7" earlyAge="4" inherits="Crafting" />
+    <column id="FSFStoneCut" childAge="7" earlyAge="4" inherits="Crafting" />
+    <column id="FSFTransport" childAge="3" earlyAge="3" inherits="Hauling" />
+    <column id="FSFCremating" childAge="3" earlyAge="3" inherits="Hauling" />
+    <column id="FSFDeliver" childAge="3" earlyAge="3" />
+    <column id="FSFHauling" childAge="3" earlyAge="3" inherits="Hauling" />
+    <column id="FSFScan" childAge="7" earlyAge="4" inherits="Research" />
+    <column id="FSFTaming" optional="true" childAge="7" earlyAge="4" inherits="Handling" />
+    <column id="FSFSlaughter" optional="true" childAge="7" earlyAge="4" inherits="Handling" />
+    <column id="FSFConvert" optional="true" dlc="ludeon.rimworld.ideology" childAge="10" earlyAge="7" inherits="Warden" />
+    <column id="FSFPrisonCare" optional="true" childAge="10" earlyAge="7" inherits="Warden" />
+    <column id="FSFHack" optional="true" childAge="10" earlyAge="7" inherits="Research" />
+    <column id="FSFTeach" optional="true" dlc="ludeon.rimworld.biotech" childAge="0" earlyAge="0" inherits="Childcare" />
+    <column id="FSFSelfTend" optional="true" childAge="10" earlyAge="7" inherits="Doctor" />
+    <column id="FSFRescue" optional="true" childAge="3" earlyAge="3" inherits="Doctor" />
+    <column id="FSFPollution" optional="true" dlc="ludeon.rimworld.biotech" childAge="3" earlyAge="3" inherits="Cleaning" />
+    <column id="FSFSnow" optional="true" childAge="3" earlyAge="3" inherits="Cleaning" />
+    <column id="FSFMerge" optional="true" childAge="3" earlyAge="3" />
+    <column id="FSFPaint" optional="true" childAge="7" earlyAge="4" inherits="Art" />
+    <column id="FSFMechanoids" optional="true" dlc="ludeon.rimworld.biotech" childAge="13" earlyAge="10" inherits="Smithing" />
+    <column id="FSFPruning" optional="true" dlc="ludeon.rimworld.ideology" childAge="7" earlyAge="4" inherits="PlantCutting" />
+    <column id="FSFSmoothing" optional="true" childAge="7" earlyAge="4" inherits="Construction" />
+  </columns>
+  <routes>
+    <task id="AC_CarryToNeuralConnector" order="435" />
+    <task id="AC_DoNeuralEditing" order="159" />
+    <task id="AC_ExtractStack" work="FSFCremating" order="99" />
+    <task id="AC_HaulCorpseToSleeveGrower" order="436" />
+    <task id="AC_HaulNeuralStacksToStorage" order="440" />
+    <task id="AG_AdministerMetal" work="FSFNurse" order="98" />
+    <task id="AG_ForceEatMetal" order="9999" />
+    <task id="AG_Warden_DeliverMetal" work="FSFNurse" order="78" />
+    <task id="ActivitySuppression" order="9992" />
+    <task id="BMAF_WorkGiver_FillNutrientFermenter" work="Hauling" order="458" />
+    <task id="BottleFeedBaby" order="498" />
+    <task id="BreadMo_QuestScan" work="FSFScan" />
+    <task id="BreastfeedBaby" order="499" />
+    <task id="BringBabyToSafety" order="500" />
+    <task id="Bury" work="FSFCremating" />
+    <task id="CarryToBreastfeed" order="497" />
+    <task id="CarryToGrowthVat" order="465" />
+    <task id="ChildcarerTeach" order="450" />
+    <task id="CleanClearPollution" order="9" />
+    <task id="ConstructRemoveFloors" work="FSFDeconstruct" />
+    <task id="ConstructRemoveFoundations" work="FSFDeconstruct" />
+    <task id="ConstructSmoothFloors" order="10" />
+    <task id="ConstructSmoothWalls" order="20" />
+    <task id="CookFillHopper" work="Hauling" order="475" />
+    <task id="CreateXenogerm" order="200" />
+    <task id="DBHAdministerFluids" work="FSFNurse" order="99" />
+    <task id="DBHAdministerFluidsWarden" work="FSFNurse" order="79" />
+    <task id="DMS_DoBill" work="Smithing" />
+    <task id="DMS_Operate" work="Smithing" />
+    <task id="DankPyon_DoBillsMakeTimber" order="50" />
+    <task id="DankPyon_DoBillsMillstone" order="30" />
+    <task id="DankPyon_DoBillsMineshaft" order="95" />
+    <task id="DankPyon_DoBillsScribeTable" work="VBE_Writing" />
+    <task id="DankPyon_DoBillsSpinningWheel" order="45" />
+    <task id="DankPyon_DoBillsTanningRack" order="40" />
+    <task id="DankPyon_DoBillsWell" work="FSFProduction" order="210" />
+    <task id="DankPyon_DoBillsWorkAlchemy" work="FSFDrugs" order="70" />
+    <task id="DankPyon_OperateQuest" work="FSFScan" />
+    <task id="DankPyon_RefuelCustom" order="480" />
+    <task id="Deconstruct" work="FSFDeconstruct" />
+    <task id="DeconstructForBlueprint" work="FSFDeconstruct" />
+    <task id="DeliverFoodToPrisoner" work="FSFNurse" order="76" />
+    <task id="DeliverHemogenToPrisoner" work="FSFNurse" order="75" />
+    <task id="DeliverResourcesToBlueprints" work="FSFDeliver" />
+    <task id="DeliverResourcesToFrames" work="FSFDeliver" />
+    <task id="DisassembleVehicle" work="FSFDeconstruct" />
+    <task id="DoBillMakesMending" order="190" />
+    <task id="DoBillsAmmoBench" order="195" />
+    <task id="DoBillsBrew" work="FSFProduction" order="144" />
+    <task id="DoBillsBurnPit" work="FSFCremating" />
+    <task id="DoBillsButcherFlesh" work="FSFButcher" />
+    <task id="DoBillsCoreMine" work="FSFDrilling" />
+    <task id="DoBillsCremate" work="FSFCremating" />
+    <task id="DoBillsFabricationBench" work="FSFFabrication" />
+    <task id="DoBillsHaulCampfire" work="FSFCremating" />
+    <task id="DoBillsMachiningTable" work="FSFMachining" />
+    <task id="DoBillsMechGestator" order="220" />
+    <task id="DoBillsMedicalAnimalOperation" work="FSFSurgeon" order="90" />
+    <task id="DoBillsMedicalHumanOperation" work="FSFSurgeon" order="95" />
+    <task id="DoBillsMedicalHumanOperationOrgans" work="FSFSurgeon" />
+    <task id="DoBillsPrimitiveLoom" work="Crafting" />
+    <task id="DoBillsProduceDrugs" work="FSFDrugs" />
+    <task id="DoBillsProstheticsTable" work="FSFFabrication" />
+    <task id="DoBillsRefinery" work="FSFRefining" />
+    <task id="DoBillsSculpt" order="20" />
+    <task id="DoBillsSerumCentrifuge" work="FSFDrugs" />
+    <task id="DoBillsSmelter" work="FSFSmelt" />
+    <task id="DoBillsStonecut" work="FSFStoneCut" />
+    <task id="DoBillsSubcoreEncoder" order="200" />
+    <task id="DoBills_ArchotetchCrefinery" work="FSFRefining" />
+    <task id="DoBills_ArchotetchCrefineryCremate" work="FSFCremating" />
+    <task id="DocCleanBedpan" work="FSFNurse" />
+    <task id="DoctorFeedAnimals" work="FSFNurse" order="55" />
+    <task id="DoctorFeedHumanlikes" work="FSFNurse" order="97" />
+    <task id="DoctorRescue" work="FSFNurse" order="500" />
+    <task id="DoctorTendToAnimals" order="99" />
+    <task id="DoctorTendToSelf" order="495" />
+    <task id="DoctorTendToSelfEmergency" order="500" />
+    <task id="DoubleTap" order="9999" />
+    <task id="Drill" work="FSFDrilling" />
+    <task id="EmptyAutoclave" work="FSFProduction" order="150" />
+    <task id="EmptyEggBox" work="Handling" order="80" />
+    <task id="EmptyProcessor" work="FSFProduction" order="145" />
+    <task id="EmptyWasteContainer" order="455" />
+    <task id="EnslavePrisoner" order="73" />
+    <task id="ExecuteEntity" order="9995" />
+    <task id="ExtractSkull" work="FSFCremating" order="99" />
+    <task id="FFE_DoBillsCook" order="190" />
+    <task id="FFE_DoBillsMeatMincer" order="40" />
+    <task id="FT_OperateAutoChem" work="FSFRefining" />
+    <task id="FT_OperateFurnace" work="FSFSmelt" />
+    <task id="FeedHemogen" work="FSFNurse" order="96" />
+    <task id="FeedPrisoner" work="FSFNurse" order="77" />
+    <task id="FillAutoclave" work="FSFProduction" order="149" />
+    <task id="FillComposter" work="FSFProduction" order="199" />
+    <task id="FillFermentingBarrel" work="FSFProduction" order="143" />
+    <task id="FillIn" work="FSFDeconstruct" order="3000" />
+    <task id="FillPawn" order="499" />
+    <task id="FillProcessor" work="FSFProduction" order="143" />
+    <task id="FixBrokenDownBuilding" work="FSFRepair" />
+    <task id="FixBrokenDownBuildingWithKit" work="FSFRepair" />
+    <task id="FluffyBreakdowns_Maintenance" work="FSFRepair" />
+    <task id="GR_ArchotechDNAExtraction" order="195" />
+    <task id="GR_DoBillsGeneRecombinator" order="180" />
+    <task id="GR_DoBillsGenetics" order="175" />
+    <task id="GR_DoBillsGeneticsTinkeringTable" order="185" />
+    <task id="GR_DoBillsGenetrainerBench" order="165" />
+    <task id="GR_DoBillsTissueGrinder" order="160" />
+    <task id="GR_DoBillsVat" order="170" />
+    <task id="GR_InsertIngredients" order="190" />
+    <task id="GR_ParagonConversion" order="200" />
+    <task id="GeneFab_DoBillsGeneBench" order="198" />
+    <task id="GroundPenetratingScan" work="FSFScan" order="55" />
+    <task id="GrowerHarvest" work="FSFHarvesting" />
+    <task id="Hack" order="1000" />
+    <task id="HaulBigStacks" work="FSFHauling" />
+    <task id="HaulCorpses" work="FSFHauling" />
+    <task id="HaulFoods" work="FSFHauling" />
+    <task id="HaulGeneral" work="FSFHauling" />
+    <task id="HaulMechsToCharger" order="450" />
+    <task id="HaulMerge" work="FSFHauling" />
+    <task id="HaulPerishables" work="FSFHauling" />
+    <task id="HaulToBiosculpterPod" order="460" />
+    <task id="HaulToGrowthVat" order="470" />
+    <task id="HaulToInventory" work="FSFHauling" />
+    <task id="HaulToPortal" work="FSFHauling" />
+    <task id="HelpGatheringItemsForCaravan" work="FSFTransport" />
+    <task id="HelpPackVehicleCaravan" work="FSFTransport" />
+    <task id="ImprisonSlave" order="77" />
+    <task id="InterrogatePrisoner" order="9991" />
+    <task id="LTS_DoStrip" work="FSFCremating" />
+    <task id="LoadRailgunMagazine" work="FSFRearming" />
+    <task id="LoadSilo" work="FSFRearming" />
+    <task id="LoadTorpedoTube" work="FSFRearming" />
+    <task id="LoadTransporters" work="FSFTransport" />
+    <task id="LoadUpgradeMaterials" work="FSFTransport" />
+    <task id="LongRangeScan" work="FSFScan" />
+    <task id="LongRangeScanMO" work="FSFScan" />
+    <task id="MF_DeliverResourcesAcrossLevel" work="FSFDeliver" />
+    <task id="MF_FixBrokenDownBuildingAcrossLevel" work="FSFRepair" />
+    <task id="MF_HaulDesignatedToDestMap" work="FSFHauling" />
+    <task id="MF_RescueDownedAcrossLevel" work="FSFNurse" order="499" />
+    <task id="Mashed_Ashlands_GrowerHarvestAsh" work="FSFHarvesting" />
+    <task id="Mashed_Ashlands_Restore" work="FSFRepair" />
+    <task id="OperatePulseEmitter" work="FSFScan" />
+    <task id="OuterRim_FillDroidFactory" order="433" />
+    <task id="PS_BringToProcessor" work="FSFProduction" />
+    <task id="PS_DrainOutOfStorage" order="495" />
+    <task id="PS_FillStorage" order="495" />
+    <task id="PS_PickUpProcessor" work="FSFProduction" />
+    <task id="PS_WorkGiverRefuelFarm" order="459" />
+    <task id="PackVehicle" work="FSFTransport" />
+    <task id="PackVehicleTurret" work="FSFTransport" />
+    <task id="PlaceFertilizer" order="190" />
+    <task id="PlayWithBaby" order="485" />
+    <task id="PodHackScan" work="FSFScan" />
+    <task id="Politics_DoBillsWritePolemicDesk" work="VBE_Writing" />
+    <task id="Politics_DoBillsWritePolemicSpot" work="VBE_Writing" />
+    <task id="ProcessSeeds" order="245" />
+    <task id="RR_InterrogatePrisoner" order="75" />
+    <task id="RR_LearnRemotely" order="155" />
+    <task id="RS_InsertGenepack" order="112" />
+    <task id="RS_InsertXenogerm" order="439" />
+    <task id="RTG_Ready" work="FSFRearming" order="40" />
+    <task id="ReadyMortar" work="FSFRearming" />
+    <task id="RearmTurrets" work="FSFRearming" />
+    <task id="RebalanceAnimalsInPens" order="95" />
+    <task id="Refuel" order="480" />
+    <task id="RefuelVehicle" work="FSFTransport" />
+    <task id="ReleaseEntity" order="106" />
+    <task id="ReleaseToWild" order="195" />
+    <task id="ReloadTurrets" work="FSFRearming" />
+    <task id="RemoveFuelFromVehicle" work="FSFTransport" />
+    <task id="RemoveRoofs" work="FSFDeconstruct" />
+    <task id="Repair" work="FSFRepair" />
+    <task id="RepairMech" order="210" />
+    <task id="RepairVehicle" work="FSFRepair" />
+    <task id="Replant" order="85" />
+    <task id="RestoreWall" work="FSFRepair" />
+    <task id="SCP_ChemDrill" work="FSFDrilling" />
+    <task id="SEX_WorkGiver_DoctorMilkColonist" work="FSFNurse" />
+    <task id="SEX_WorkGiver_WardenMilkPrisoner" work="FSFNurse" />
+    <task id="ScanSpace" work="FSFScan" />
+    <task id="ShashlichnikDigCaveEntrance" order="115" />
+    <task id="ShashlichnikGoDownIfJobUnderground_Haul" work="FSFHauling" />
+    <task id="ShashlichnikGoDownIfJobUnderground_HaulToPortal" work="FSFHauling" />
+    <task id="Slaughter" order="200" />
+    <task id="SnapOut_CalmPawnDownWorkgiver" order="9999" />
+    <task id="Strip" work="FSFCremating" />
+    <task id="StudyArchotechStructures" order="160" />
+    <task id="SuppressSlave" order="76" />
+    <task id="TRAHS_DoBillsAdvancedDeepDrill" work="FSFDrilling" />
+    <task id="TakeBeerOutOfFermentingBarrel" work="FSFProduction" order="145" />
+    <task id="TakeBioferriteOutOfHarvester" work="FSFProduction" order="195" />
+    <task id="TakeEntityToHoldingPlatform" order="9994" />
+    <task id="TakeToBedToOperate" work="FSFSurgeon" order="100" />
+    <task id="TakeToPen" order="155" />
+    <task id="Tame" work="FSFTraining" />
+    <task id="Train" work="FSFTraining" />
+    <task id="TransferEntity" order="9993" />
+    <task id="USH_VaccineResearch" order="154" />
+    <task id="Uninstall" work="FSFDeconstruct" />
+    <task id="UnloadCarriers" work="FSFTransport" />
+    <task id="UnloadComposter" work="FSFProduction" order="200" />
+    <task id="VBE_DoBillsBar" order="250" />
+    <task id="VCE_DoBillsCanning" order="45" />
+    <task id="VCE_DoBillsFryer" order="200" />
+    <task id="VCE_DoBillsGrill" order="185" />
+    <task id="VCE_DoBillsPrep" order="30" />
+    <task id="VCE_DoBillsSushi" order="195" />
+    <task id="VCE_DoBillsVegMilkExtractor" order="50" />
+    <task id="VCE_HarvestAquatic" work="FSFHarvesting" />
+    <task id="VCE_HarvestFlowerGarden" work="FSFHarvesting" />
+    <task id="VCE_HarvestSandy" work="FSFHarvesting" />
+    <task id="VEF_RefuelSecondary" work="FSFRearming" />
+    <task id="VFEA_Interrogate" order="74" />
+    <task id="VFEM2_DoBillsAlchemyTable" work="FSFDrugs" />
+    <task id="VFEM2_DoBillsAlchemyTable_Electric" work="FSFDrugs" />
+    <task id="VFEP_DoWelding" order="9999" />
+    <task id="VFES_ConstructRearmTrap" work="FSFRearming" />
+    <task id="VFES_RearmTrap" work="FSFRearming" />
+    <task id="VFE_StudyBuilding" order="160" />
+    <task id="VGE_BuildVacBarrierRoofs" order="101" />
+    <task id="VGE_CollectGravdata" order="101" />
+    <task id="VGE_DoBillsFabricationBench" work="FSFFabrication" />
+    <task id="VGE_DoBillsMachiningTable" work="FSFMachining" />
+    <task id="VGE_DoBillsProduceDrugs" work="FSFDrugs" />
+    <task id="VGE_DoBillsRefinery" work="FSFRefining" />
+    <task id="VGE_MaintainGrav" work="FSFRepair" order="41" />
+    <task id="VGE_OperateScannerCluster" work="FSFScan" />
+    <task id="VPE_HarvestMushroom" work="FSFHarvesting" />
+    <task id="VPE_TillSoilWorkBuild" order="198" />
+    <task id="VPE_TillSoilWorkDeliverBp" order="200" />
+    <task id="VPE_TillSoilWorkDeliverFr" order="199" />
+    <task id="VQEA_CarryToAncientWonderdoc" order="460" />
+    <task id="VQEA_DoBillsAncientCookingStation" order="180" />
+    <task id="VQE_FixCriticallyBrokenDownBuilding" work="FSFRepair" order="499" />
+    <task id="VQE_MaintainGenetron" work="FSFRepair" order="500" />
+    <task id="VQE_Refuel" order="481" />
+    <task id="VQE_StudyGenetron" order="160" />
+    <task id="VREA_CarryToAndroidBehavioristStation" order="434" />
+    <task id="VREA_CreateAndroid" order="197" />
+    <task id="VREA_DoBillsAndroidOperation" order="199" />
+    <task id="VREA_DoBillsUseAndroidPartWorkbench" order="198" />
+    <task id="VREA_ModifyAndroid" order="199" />
+    <task id="VRE_RefuelDraincaskets" order="469" />
+    <task id="VR_CreateXenogerm" order="200" />
+    <task id="VR_ExtractGeneOnPawn" work="FSFSurgeon" />
+    <task id="VVE_RestoreWreck" order="96" />
+    <task id="VisitSickPawn" work="FSFNurse" />
+    <task id="WardenEmptySepticTank" order="444" work="Hauling" />
+    <task id="WardenRefillWater" work="Hauling" />
+    <task id="WorkOnUpgrade" order="95" />
+    <task id="emptySepticTank" order="445" />
+    <task id="washChild" order="490" />
+    <task id="washPatient" work="FSFNurse" />
+    <order work="Crafting" rank="485" />
+    <order work="Diplomat" rank="1060" />
+    <order work="FSFSEStudy" rank="49" />
+    <order work="Fishing" rank="949" />
+    <order work="Foraging" rank="716" />
+    <order work="GR_Genetics" rank="105" />
+    <order work="HPGMGenerate" rank="44" />
+    <order work="Hauling" rank="315" />
+    <order work="HaulingUrgent" rank="1170" />
+    <order work="Managing" rank="110" />
+    <order work="MedicalTraining" rank="1285" />
+    <order work="MiscTraining_CombatTraining" rank="45" />
+    <order work="NuclearWork" rank="316" />
+    <order work="PlantCutting" rank="710" />
+    <order work="RB_BeekeepingWork" rank="420" />
+    <order work="RecycleThis_Recycle" rank="411" />
+    <order work="RimefellerCrafting" rank="426" />
+    <order work="RomyScavenging" rank="699" />
+    <order work="Smithing" rank="475" />
+    <order work="Tailoring" rank="480" />
+    <order work="VCEF_Fishing" rank="43" />
+    <order work="WTH_Hack" rank="495" />
+    <recipe id="@RLEMake_RawBlendedMeat" work="-" />
+    <recipe id="BurnApparel" work="FSFCremating" />
+    <recipe id="BurnDrugs" work="FSFCremating" />
+    <recipe id="BurnWeapon" work="FSFCremating" />
+    <recipe id="MeatBlend100" work="-" />
+    <recipe id="MeatBlend5" work="-" />
+    <recipe id="MeatBlend50" work="-" />
+    <recipe id="MeatBlend75" work="-" />
+    <recipe id="MeatblendTwenty" work="-" />
+    <recipe id="VeggieMix100" work="-" />
+    <recipe id="VeggieMix5" work="-" />
+    <recipe id="VeggieMix50" work="-" />
+    <recipe id="VeggieMix75" work="-" />
+    <recipe id="VeggieMixTwenty" work="-" />
+    <detachBench task="DMS_Operate" bench="DMS_Furnace" />
+    <detachBench task="DMS_DoBill" bench="DMS_LabFurnace" />
+    <detachBench task="DMS_Operate" bench="DMS_ReactionChamber" />
+    <detachBench task="DMS_DoBill" bench="DMS_LabReactor" />
+    <additionalTask id="FSFTakeToBedToOperate" kind="WorkGiver_TakeToBedToOperate" work="FSFNurse" order="499" needs="Manipulation" />
+    <additionalTask id="FSFwashChild" kind="DubsBadHygiene.WorkGiver_washChild" work="FSFNurse" order="53" needs="Manipulation" requires="Dubwise.DubsBadHygiene,Ludeon.RimWorld.Biotech" />
+    <additionalTask id="FSFMF_DeliverResourcesAcrossLevel" kind="MultiFloors.Jobs.WorkGiver_ConstructDeliverResourcesAcrossLevel" work="Hauling" order="151" needs="Manipulation" directOrderable="false" any="telardo.MultiFloors,telardo.MultiFloorsDev" />
+    <additionalTask id="FSFDeliverResourcesToFrames" kind="WorkGiver_ConstructDeliverResourcesToFrames" work="FSFHauling" order="10" needs="Manipulation" prioritizeSustains="true" equivalenceGroup="AssistInConstruction" nonColonistsCanDo="true" />
+    <additionalTask id="FSFDeliverResourcesToBlueprints" kind="WorkGiver_ConstructDeliverResourcesToBlueprints" work="FSFHauling" order="9" needs="Manipulation" prioritizeSustains="true" equivalenceGroup="AssistInConstruction" nonColonistsCanDo="true" />
+    <additionalTask id="FSFClearBlockage" kind="DubsBadHygiene.WorkGiver_FixBlockage" work="Hauling" order="443" needs="Manipulation" requires="Dubwise.DubsBadHygiene" />
+    <additionalTask id="FSFDoubleTap" kind="ZombieLand.WorkGiver_DoubleTap" work="FSFCremating" order="9999" needs="Manipulation" canBeDoneWhileDrafted="true" requires="brrainz.zombieland" />
+    <additionalTask id="FSFDMS_Furnace" kind="Fortified.WorkGiver_DoAutonomousBill" work="FSFSmelt" order="140" needs="Manipulation" benches="DMS_Furnace" prioritizeSustains="true" requires="Aoba.DeadManSwitch.Core" />
+    <additionalTask id="FSFDMS_LabFurnace" kind="WorkGiver_DoBill" work="FSFSmelt" order="139" needs="Manipulation" benches="DMS_LabFurnace" prioritizeSustains="true" requires="Aoba.DeadManSwitch.Core" />
+    <additionalTask id="FSFProcessSeeds" kind="WorkGiver_DoBill" work="FSFProduction" order="205" needs="Manipulation" benches="SeedExtractionSpot SeedExtractionBench" prioritizeSustains="true" any="Owlchemist.SeedsPleaseLite,Evyatar108.SeedsPleaseLiteRedux" />
+    <additionalTask id="FSFVCE_DoBillsVegMilkExtractor" kind="WorkGiver_DoBill" work="FSFProduction" order="95" needs="Manipulation" benches="VCE_VegMilkExtractor" prioritizeSustains="true" requires="VanillaExpanded.VPlantsEMore,VanillaExpanded.VCookE" />
+    <additionalTask id="FSFVCE_DoBillsCanning" kind="WorkGiver_DoBill" work="FSFProduction" order="90" needs="Manipulation" benches="VCE_CanningMachine" prioritizeSustains="true" requires="VanillaExpanded.VCookE" />
+    <additionalTask id="FSFFFE_DoBillsMeatMincer" kind="WorkGiver_DoBill" work="FSFProduction" order="89" needs="Manipulation" benches="FFE_MeatMincer" prioritizeSustains="true" requires="Farxmai2.VanillaFurnitureExpandedPack" />
+    <additionalTask id="FSFVCE_DoBillsPrep" kind="WorkGiver_DoBill" work="FSFProduction" order="87" needs="Manipulation" benches="VCE_CondimentPrepTable" prioritizeSustains="true" requires="VanillaExpanded.VCookE" />
+    <additionalTask id="FSFVBE_DoBillsEspressoMachine" kind="WorkGiver_DoBill" work="FSFProduction" order="70" needs="Manipulation" benches="VBE_EspressoMachineBuilding" prioritizeSustains="true" requires="VanillaExpanded.VBrewECandT" />
+    <additionalTask id="FSFDMS_ReactionChamber" kind="Fortified.WorkGiver_DoAutonomousBill" work="FSFRefining" order="140" needs="Manipulation" benches="DMS_ReactionChamber" prioritizeSustains="true" requires="Aoba.DeadManSwitch.Core" />
+    <additionalTask id="FSFDMS_LabReactor" kind="WorkGiver_DoBill" work="FSFRefining" order="139" needs="Manipulation" benches="DMS_LabReactor" prioritizeSustains="true" requires="Aoba.DeadManSwitch.Core" />
+    <additionalTask id="FSFVFEA_DoBillsAncientCookingStation" kind="WorkGiver_DoBill" work="FSFButcher" order="50" needs="Manipulation" benches="VFEA_AncientCookingStation" prioritizeSustains="true" requires="VanillaExpanded.VFEA" />
+  </routes>
+  <routes option="FSFTaming">
+    <task id="Tame" work="FSFTaming" />
+  </routes>
+  <routes option="FSFSlaughter">
+    <task id="Slaughter" work="FSFSlaughter" />
+  </routes>
+  <routes option="FSFConvert">
+    <task id="ConvertPrisoner" work="FSFConvert" />
+  </routes>
+  <routes option="FSFPrisonCare">
+    <task id="AG_Warden_DeliverMetal" work="FSFPrisonCare" />
+    <task id="DBHAdministerFluidsWarden" work="FSFPrisonCare" />
+    <task id="DeliverFoodToPrisoner" work="FSFPrisonCare" />
+    <task id="DeliverHemogenToPrisoner" work="FSFPrisonCare" />
+    <task id="FeedPrisoner" work="FSFPrisonCare" />
+    <task id="SEX_WorkGiver_WardenMilkPrisoner" work="FSFPrisonCare" />
+  </routes>
+  <routes option="FSFHack">
+    <task id="Hack" work="FSFHack" />
+  </routes>
+  <routes option="FSFTeach">
+    <task id="ChildcarerTeach" work="FSFTeach" />
+  </routes>
+  <routes option="FSFSelfTend">
+    <task id="@DoctorTendToSelf" work="FSFSelfTend" />
+  </routes>
+  <routes option="FSFRescue">
+    <additionalTask id="FSFDoctorRescue" kind="WorkGiver_RescueDowned" work="FSFRescue" order="60" needs="Manipulation" directOrderable="false" />
+    <additionalTask id="FSFMF_RescueDownedAcrossLevel" kind="MultiFloors.Jobs.WorkGiver_RescueDownedAcrossLevel" work="FSFRescue" order="59" needs="Manipulation" any="telardo.MultiFloors,telardo.MultiFloorsDev" />
+  </routes>
+  <routes option="FSFPollution">
+    <task id="CleanClearPollution" work="FSFPollution" />
+  </routes>
+  <routes option="FSFSnow">
+    <task id="CleanClearSnow" work="FSFSnow" />
+  </routes>
+  <routes option="FSFMerge">
+    <additionalTask id="FSFHaulMerge" kind="WorkGiver_Merge" work="FSFMerge" order="5" needs="Manipulation" />
+  </routes>
+  <routes option="FSFPaint">
+    <task id="DPSPaintFloors" work="FSFPaint" />
+    <task id="DPSPaintThings" work="FSFPaint" />
+    <task id="DPSStripPaint" work="FSFPaint" />
+    <task id="PaintBuilding" work="FSFPaint" />
+    <task id="PaintFloor" work="FSFPaint" />
+    <task id="PaintVehicle" work="FSFPaint" />
+    <task id="RemovePaintBuilding" work="FSFPaint" />
+    <task id="RemovePaintFloor" work="FSFPaint" />
+  </routes>
+  <routes option="FSFMechanoids">
+    <task id="DMS_DoBillsMechConstructor" work="FSFMechanoids" />
+    <task id="DoBillsMechGestator" work="FSFMechanoids" />
+    <task id="DoBillsSubcoreEncoder" work="FSFMechanoids" />
+    <task id="RepairMech" work="FSFMechanoids" />
+    <task id="VREA_CreateAndroid" work="FSFMechanoids" />
+    <task id="VREA_DoBillsAndroidOperation" work="FSFMechanoids" />
+    <task id="VREA_DoBillsUseAndroidPartWorkbench" work="FSFMechanoids" />
+    <task id="VREA_RepairAndroid" work="FSFMechanoids" />
+    <task id="VR_DoBillsMechGestator" work="FSFMechanoids" />
+    <task id="VR_DoBillsSubcoreEncoder" work="FSFMechanoids" />
+  </routes>
+  <routes option="FSFPruning">
+    <task id="PruneGauranlenTree" work="FSFPruning" />
+  </routes>
+  <routes option="FSFSmoothing">
+    <task id="ConstructSmoothFloors" work="FSFSmoothing" />
+    <task id="ConstructSmoothWalls" work="FSFSmoothing" />
+  </routes>
+  <routes option="FSFAnomalyTasksInDarkStudy">
+    <task id="ActivitySuppression" work="DarkStudy" />
+    <task id="ExecuteEntity" work="DarkStudy" />
+    <task id="InterrogatePrisoner" work="DarkStudy" />
+    <task id="ReleaseEntity" work="DarkStudy" />
+    <task id="StudyInteract" order="50" />
+    <task id="TakeEntityToHoldingPlatform" work="DarkStudy" />
+    <task id="TransferEntity" work="DarkStudy" />
+  </routes>
+  <routes option="FSFDraftedWorkTasks" />
+  <routes option="FSFIdeoRolesAreCapable" />
+  <routes option="FSFMechanoidsAreCapable">
+    <task id="CarryToGeneExtractor" mechs="true" />
+    <task id="CarryToGeneRipper" mechs="true" />
+    <task id="CarryToGrowthVat" mechs="true" />
+    <task id="DoBillsBrew" mechs="true" />
+    <task id="DoBillsSubcoreEncoder" mechs="true" />
+    <task id="DoctorFeedAnimals" mechs="true" />
+    <task id="DoctorTendToAnimals" mechs="true" />
+    <task id="ExtractTree" mechs="true" />
+    <task id="FillFermentingBarrel" mechs="true" />
+    <task id="HaulMechsToCharger" mechs="true" />
+    <task id="PaintBuilding" mechs="true" />
+    <task id="PaintFloor" mechs="true" />
+    <task id="RemovePaintFloor" mechs="true" />
+    <task id="RepairMech" mechs="true" />
+    <task id="Replant" mechs="true" />
+    <task id="Strip" mechs="true" />
+    <task id="TakeBeerOutOfFermentingBarrel" mechs="true" />
+  </routes>
+  <routes option="FSFRescueInFirefighting">
+    <additionalTask id="FSFFirefighterRescue" kind="WorkGiver_RescueDowned" work="Firefighter" order="60" needs="Manipulation" directOrderable="false" />
+    <additionalTask id="FSFMF_RescueDownedAcrossLevel" kind="MultiFloors.Jobs.WorkGiver_RescueDownedAcrossLevel" work="Firefighter" order="59" needs="Manipulation" any="telardo.MultiFloors,telardo.MultiFloorsDev" />
+  </routes>
+  <routes option="FSFSlavesAreCapable" />
+  <routes option="FSFWarcasketsAreCapable" />
+  <capabilities>
+    <grant type="HediffDef" id="WTH_HaulingModule" field="workTypes" jobs="FSFRearming FSFTransport FSFCremating FSFHauling" component="WhatTheHack.DefModExtension_Hediff_WorkModule" />
+    <grant type="ThingDef" id="AIRobot_Cleaner" field="mechWorkTypePriorities" jobs="FSFSnow:1" />
+    <grant type="ThingDef" id="AIRobot_Cleaner" field="robotWorkTypes" jobs="FSFSnow:1" />
+    <grant type="ThingDef" id="AIRobot_Cleaner_II" field="mechWorkTypePriorities" jobs="FSFSnow:1" />
+    <grant type="ThingDef" id="AIRobot_Cleaner_II" field="robotWorkTypes" jobs="FSFSnow:1" />
+    <grant type="ThingDef" id="AIRobot_Cleaner_III" field="mechWorkTypePriorities" jobs="FSFSnow:1" />
+    <grant type="ThingDef" id="AIRobot_Cleaner_III" field="robotWorkTypes" jobs="FSFSnow:1" />
+    <grant type="ThingDef" id="AIRobot_Cleaner_IV" field="mechWorkTypePriorities" jobs="FSFSnow:1" />
+    <grant type="ThingDef" id="AIRobot_Cleaner_IV" field="robotWorkTypes" jobs="FSFSnow:1" />
+    <grant type="ThingDef" id="AIRobot_Cleaner_V" field="mechWorkTypePriorities" jobs="FSFSnow:1" />
+    <grant type="ThingDef" id="AIRobot_Cleaner_V" field="robotWorkTypes" jobs="FSFSnow:1" />
+    <grant type="ThingDef" id="AIRobot_ConstructionBot" field="robotWorkTypes" jobs="FSFRepair:1 FSFDeconstruct:1 FSFSmoothing:1" />
+    <grant type="ThingDef" id="AIRobot_CraftingBot" field="robotWorkTypes" jobs="FSFMachining:1 FSFFabrication:1 FSFMechanoids:1" />
+    <grant type="ThingDef" id="AIRobot_GardenerBot" field="robotWorkTypes" jobs="FSFHarvesting:1 FSFButcher:2 FSFPruning:1" />
+    <grant type="ThingDef" id="AIRobot_Hauler" field="robotWorkTypes" jobs="FSFRearming:1 FSFTransport:1 FSFCremating:1 FSFHauling:1" />
+    <grant type="ThingDef" id="AIRobot_Hauler_II" field="mechWorkTypePriorities" jobs="FSFRearming:1 FSFTransport:1 FSFCremating:1 FSFHauling:1" />
+    <grant type="ThingDef" id="AIRobot_Hauler_II" field="robotWorkTypes" jobs="FSFRearming:1 FSFTransport:1 FSFCremating:1 FSFHauling:1" />
+    <grant type="ThingDef" id="AIRobot_Hauler_III" field="mechWorkTypePriorities" jobs="FSFRearming:1 FSFTransport:1 FSFCremating:1 FSFHauling:1" />
+    <grant type="ThingDef" id="AIRobot_Hauler_III" field="robotWorkTypes" jobs="FSFRearming:1 FSFTransport:1 FSFCremating:1 FSFHauling:1" />
+    <grant type="ThingDef" id="AIRobot_Hauler_IV" field="mechWorkTypePriorities" jobs="FSFRearming:1 FSFTransport:1 FSFCremating:1 FSFHauling:1" />
+    <grant type="ThingDef" id="AIRobot_Hauler_IV" field="robotWorkTypes" jobs="FSFRearming:1 FSFTransport:1 FSFCremating:1 FSFHauling:1" />
+    <grant type="ThingDef" id="AIRobot_Hauler_V" field="mechWorkTypePriorities" jobs="FSFRearming:1 FSFTransport:1 FSFCremating:1 FSFHauling:1" />
+    <grant type="ThingDef" id="AIRobot_Hauler_V" field="robotWorkTypes" jobs="FSFRearming:1 FSFTransport:1 FSFCremating:1 FSFHauling:1" />
+    <grant type="ThingDef" id="AIRobot_MiningBot" field="robotWorkTypes" jobs="FSFDrilling:1" />
+    <grant type="ThingDef" id="AM_Mech_MasterChef" field="mechWorkTypePriorities" jobs="FSFButcher:1 FSFProduction:1" />
+    <grant type="ThingDef" id="AM_PristineStrider" field="mechWorkTypePriorities" jobs="FSFRearming:1 FSFTransport:1 FSFCremating:1 FSFHauling:1" />
+    <grant type="ThingDef" id="CaretakerDroneStation" field="workTypes" jobs="FSFRearming FSFProduction FSFTransport FSFCremating FSFHauling FSFNurse FSFSnow FSFPollution" component="ProjectRimFactory.Drones.DefModExtension_DroneStation" />
+    <grant type="ThingDef" id="ConstructionDroneStation" field="workTypes" jobs="FSFRepair FSFDeconstruct FSFDrilling FSFSmoothing" component="ProjectRimFactory.Drones.DefModExtension_DroneStation" />
+    <grant type="ThingDef" id="GrowingDroneStation" field="workTypes" jobs="FSFHarvesting FSFPruning" component="ProjectRimFactory.Drones.DefModExtension_DroneStation" />
+    <grant type="ThingDef" id="MAO_Mechanoids_AssemblerBase" field="allowedWorkTypes" jobs="FSFRepair FSFDeconstruct" component="VFE.Mechanoids.CompProperties_MachineChargingStation" />
+    <grant type="ThingDef" id="MAO_Mechanoids_MenderBase" field="allowedWorkTypes" jobs="FSFNurse FSFSurgeon" component="VFE.Mechanoids.CompProperties_MachineChargingStation" />
+    <grant type="ThingDef" id="PRF_DroneCultivator_I" field="workTypes" jobs="FSFHarvesting FSFPruning" component="ProjectRimFactory.Drones.DefModExtension_DroneStation" />
+    <grant type="ThingDef" id="PRF_DroneCultivator_II" field="workTypes" jobs="FSFHarvesting FSFRearming FSFProduction FSFTransport FSFCremating FSFHauling FSFPruning" component="ProjectRimFactory.Drones.DefModExtension_DroneStation" />
+    <grant type="ThingDef" id="PRF_DroneCultivator_III" field="workTypes" jobs="FSFHarvesting FSFRearming FSFProduction FSFTransport FSFCremating FSFHauling FSFPruning" component="ProjectRimFactory.Drones.DefModExtension_DroneStation" />
+    <grant type="ThingDef" id="PRF_DroneCultivator_II_sun" field="workTypes" jobs="FSFHarvesting FSFRearming FSFProduction FSFTransport FSFCremating FSFHauling FSFPruning" component="ProjectRimFactory.Drones.DefModExtension_DroneStation" />
+    <grant type="ThingDef" id="PRF_MiniDroneColumn" field="workTypes" jobs="FSFRearming FSFProduction FSFTransport FSFCremating FSFHauling FSFSnow FSFPollution" component="ProjectRimFactory.Drones.DefModExtension_DroneStation" />
+    <grant type="ThingDef" id="PRF_MiniHelper" field="workTypes" jobs="FSFRearming FSFProduction FSFTransport FSFCremating FSFHauling FSFSnow FSFPollution" component="ProjectRimFactory.Drones.DefModExtension_DroneStation" />
+    <grant type="ThingDef" id="PRF_MiniHelperAtomic" field="workTypes" jobs="FSFRearming FSFProduction FSFTransport FSFCremating FSFHauling" component="ProjectRimFactory.Drones.DefModExtension_DroneStation" />
+    <grant type="ThingDef" id="PRF_MiniHelperFishing" field="workTypes" jobs="FSFRearming FSFProduction FSFTransport FSFCremating FSFHauling" component="ProjectRimFactory.Drones.DefModExtension_DroneStation" />
+    <grant type="ThingDef" id="RPP_Bot_Builder_I" field="mechWorkTypePriorities" jobs="FSFRepair:1 FSFDeconstruct:1 FSFDrilling:3 FSFSmoothing:1" />
+    <grant type="ThingDef" id="RPP_Bot_Builder_I" field="robotWorkTypes" jobs="FSFRepair:1 FSFDeconstruct:1 FSFDrilling:3 FSFSmoothing:1" />
+    <grant type="ThingDef" id="RPP_Bot_Builder_II" field="mechWorkTypePriorities" jobs="FSFRepair:1 FSFDeconstruct:1 FSFDrilling:3 FSFSmoothing:1" />
+    <grant type="ThingDef" id="RPP_Bot_Builder_II" field="robotWorkTypes" jobs="FSFRepair:1 FSFDeconstruct:1 FSFDrilling:3 FSFSmoothing:1" />
+    <grant type="ThingDef" id="RPP_Bot_Builder_III" field="mechWorkTypePriorities" jobs="FSFRepair:1 FSFDeconstruct:1 FSFDrilling:3 FSFSmoothing:1" />
+    <grant type="ThingDef" id="RPP_Bot_Builder_III" field="robotWorkTypes" jobs="FSFRepair:1 FSFDeconstruct:1 FSFDrilling:3 FSFSmoothing:1" />
+    <grant type="ThingDef" id="RPP_Bot_Builder_IV" field="mechWorkTypePriorities" jobs="FSFRepair:1 FSFDeconstruct:1 FSFDrilling:3 FSFSmoothing:1" />
+    <grant type="ThingDef" id="RPP_Bot_Builder_IV" field="robotWorkTypes" jobs="FSFRepair:1 FSFDeconstruct:1 FSFDrilling:3 FSFSmoothing:1" />
+    <grant type="ThingDef" id="RPP_Bot_Builder_V" field="mechWorkTypePriorities" jobs="FSFRepair:1 FSFDeconstruct:1 FSFDrilling:3 FSFSmoothing:1" />
+    <grant type="ThingDef" id="RPP_Bot_Builder_V" field="robotWorkTypes" jobs="FSFRepair:1 FSFDeconstruct:1 FSFDrilling:3 FSFSmoothing:1" />
+    <grant type="ThingDef" id="RPP_Bot_Crafter_I" field="mechWorkTypePriorities" jobs="FSFMachining:1 FSFFabrication:1 FSFDrugs:2 FSFRefining:3 FSFSmelt:3 FSFStoneCut:3" />
+    <grant type="ThingDef" id="RPP_Bot_Crafter_I" field="robotWorkTypes" jobs="FSFMachining:1 FSFFabrication:1 FSFDrugs:2 FSFRefining:3 FSFSmelt:3 FSFStoneCut:3" />
+    <grant type="ThingDef" id="RPP_Bot_Crafter_II" field="mechWorkTypePriorities" jobs="FSFMachining:1 FSFFabrication:1 FSFDrugs:2 FSFRefining:3 FSFSmelt:3 FSFStoneCut:3" />
+    <grant type="ThingDef" id="RPP_Bot_Crafter_II" field="robotWorkTypes" jobs="FSFMachining:1 FSFFabrication:1 FSFDrugs:2 FSFRefining:3 FSFSmelt:3 FSFStoneCut:3" />
+    <grant type="ThingDef" id="RPP_Bot_Crafter_III" field="mechWorkTypePriorities" jobs="FSFMachining:1 FSFFabrication:1 FSFDrugs:2 FSFRefining:3 FSFSmelt:3 FSFStoneCut:3" />
+    <grant type="ThingDef" id="RPP_Bot_Crafter_III" field="robotWorkTypes" jobs="FSFMachining:1 FSFFabrication:1 FSFDrugs:2 FSFRefining:3 FSFSmelt:3 FSFStoneCut:3" />
+    <grant type="ThingDef" id="RPP_Bot_Crafter_IV" field="mechWorkTypePriorities" jobs="FSFMachining:1 FSFFabrication:1 FSFDrugs:2 FSFRefining:3 FSFSmelt:3 FSFStoneCut:3" />
+    <grant type="ThingDef" id="RPP_Bot_Crafter_IV" field="robotWorkTypes" jobs="FSFMachining:1 FSFFabrication:1 FSFDrugs:2 FSFRefining:3 FSFSmelt:3 FSFStoneCut:3" />
+    <grant type="ThingDef" id="RPP_Bot_Crafter_V" field="mechWorkTypePriorities" jobs="FSFMachining:1 FSFFabrication:1 FSFDrugs:2 FSFRefining:3 FSFSmelt:3 FSFStoneCut:3" />
+    <grant type="ThingDef" id="RPP_Bot_Crafter_V" field="robotWorkTypes" jobs="FSFMachining:1 FSFFabrication:1 FSFDrugs:2 FSFRefining:3 FSFSmelt:3 FSFStoneCut:3" />
+    <grant type="ThingDef" id="RPP_Bot_ER_I" field="mechWorkTypePriorities" jobs="FSFNurse:1 FSFSurgeon:1" />
+    <grant type="ThingDef" id="RPP_Bot_ER_I" field="robotWorkTypes" jobs="FSFNurse:1 FSFSurgeon:1" />
+    <grant type="ThingDef" id="RPP_Bot_ER_II" field="mechWorkTypePriorities" jobs="FSFNurse:1 FSFSurgeon:1" />
+    <grant type="ThingDef" id="RPP_Bot_ER_II" field="robotWorkTypes" jobs="FSFNurse:1 FSFSurgeon:1" />
+    <grant type="ThingDef" id="RPP_Bot_ER_III" field="mechWorkTypePriorities" jobs="FSFNurse:1 FSFSurgeon:1" />
+    <grant type="ThingDef" id="RPP_Bot_ER_III" field="robotWorkTypes" jobs="FSFNurse:1 FSFSurgeon:1" />
+    <grant type="ThingDef" id="RPP_Bot_ER_IV" field="mechWorkTypePriorities" jobs="FSFNurse:1 FSFSurgeon:1" />
+    <grant type="ThingDef" id="RPP_Bot_ER_IV" field="robotWorkTypes" jobs="FSFNurse:1 FSFSurgeon:1" />
+    <grant type="ThingDef" id="RPP_Bot_ER_V" field="mechWorkTypePriorities" jobs="FSFNurse:1 FSFSurgeon:1" />
+    <grant type="ThingDef" id="RPP_Bot_ER_V" field="robotWorkTypes" jobs="FSFNurse:1 FSFSurgeon:1" />
+    <grant type="ThingDef" id="RPP_Bot_Kitchen_I" field="mechWorkTypePriorities" jobs="FSFButcher:1 FSFProduction:1 FSFHarvesting:2" />
+    <grant type="ThingDef" id="RPP_Bot_Kitchen_I" field="robotWorkTypes" jobs="FSFButcher:1 FSFProduction:1 FSFHarvesting:1" />
+    <grant type="ThingDef" id="RPP_Bot_Kitchen_II" field="mechWorkTypePriorities" jobs="FSFButcher:1 FSFProduction:1 FSFHarvesting:2" />
+    <grant type="ThingDef" id="RPP_Bot_Kitchen_II" field="robotWorkTypes" jobs="FSFButcher:1 FSFProduction:1 FSFHarvesting:1" />
+    <grant type="ThingDef" id="RPP_Bot_Kitchen_III" field="mechWorkTypePriorities" jobs="FSFButcher:1 FSFProduction:1 FSFHarvesting:2" />
+    <grant type="ThingDef" id="RPP_Bot_Kitchen_III" field="robotWorkTypes" jobs="FSFButcher:1 FSFProduction:1 FSFHarvesting:1" />
+    <grant type="ThingDef" id="RPP_Bot_Kitchen_IV" field="mechWorkTypePriorities" jobs="FSFButcher:1 FSFProduction:1 FSFHarvesting:2" />
+    <grant type="ThingDef" id="RPP_Bot_Kitchen_IV" field="robotWorkTypes" jobs="FSFButcher:1 FSFProduction:1 FSFHarvesting:1" />
+    <grant type="ThingDef" id="RPP_Bot_Kitchen_V" field="mechWorkTypePriorities" jobs="FSFButcher:2 FSFProduction:2 FSFHarvesting:2" />
+    <grant type="ThingDef" id="RPP_Bot_Kitchen_V" field="robotWorkTypes" jobs="FSFButcher:1 FSFProduction:1 FSFHarvesting:1" />
+    <grant type="ThingDef" id="RPP_Bot_Omni_I" field="mechWorkTypePriorities" jobs="FSFRearming:2 FSFTransport:2 FSFCremating:2 FSFHauling:2 FSFRepair:2 FSFDeconstruct:2 FSFDrilling:2 FSFMachining:2 FSFFabrication:2 FSFDrugs:2 FSFRefining:2 FSFSmelt:2 FSFStoneCut:2 FSFNurse:1 FSFSurgeon:1 FSFButcher:2 FSFProduction:2 FSFHarvesting:2 FSFSnow:3 FSFSmoothing:2" />
+    <grant type="ThingDef" id="RPP_Bot_Omni_I" field="robotWorkTypes" jobs="FSFRearming:2 FSFTransport:2 FSFCremating:2 FSFHauling:2 FSFRepair:2 FSFDeconstruct:2 FSFDrilling:2 FSFMachining:2 FSFFabrication:2 FSFDrugs:2 FSFRefining:2 FSFSmelt:2 FSFStoneCut:2 FSFNurse:1 FSFSurgeon:1 FSFButcher:2 FSFProduction:2 FSFHarvesting:2 FSFSnow:3 FSFSmoothing:2" />
+    <grant type="ThingDef" id="RPP_Bot_Omni_II" field="mechWorkTypePriorities" jobs="FSFRearming:2 FSFTransport:2 FSFCremating:2 FSFHauling:2 FSFRepair:2 FSFDeconstruct:2 FSFDrilling:2 FSFMachining:2 FSFFabrication:2 FSFDrugs:2 FSFRefining:2 FSFSmelt:2 FSFStoneCut:2 FSFNurse:1 FSFSurgeon:1 FSFButcher:2 FSFProduction:2 FSFHarvesting:2 FSFSnow:3 FSFSmoothing:2" />
+    <grant type="ThingDef" id="RPP_Bot_Omni_II" field="robotWorkTypes" jobs="FSFRearming:2 FSFTransport:2 FSFCremating:2 FSFHauling:2 FSFRepair:2 FSFDeconstruct:2 FSFDrilling:2 FSFMachining:2 FSFFabrication:2 FSFDrugs:2 FSFRefining:2 FSFSmelt:2 FSFStoneCut:2 FSFNurse:1 FSFSurgeon:1 FSFButcher:2 FSFProduction:2 FSFHarvesting:2 FSFSnow:3 FSFSmoothing:2" />
+    <grant type="ThingDef" id="RPP_Bot_Omni_III" field="mechWorkTypePriorities" jobs="FSFRearming:2 FSFTransport:2 FSFCremating:2 FSFHauling:2 FSFRepair:2 FSFDeconstruct:2 FSFDrilling:2 FSFMachining:2 FSFFabrication:2 FSFDrugs:2 FSFRefining:2 FSFSmelt:2 FSFStoneCut:2 FSFNurse:1 FSFSurgeon:1 FSFButcher:2 FSFProduction:2 FSFHarvesting:2 FSFSnow:3 FSFSmoothing:2" />
+    <grant type="ThingDef" id="RPP_Bot_Omni_III" field="robotWorkTypes" jobs="FSFRearming:2 FSFTransport:2 FSFCremating:2 FSFHauling:2 FSFRepair:2 FSFDeconstruct:2 FSFDrilling:2 FSFMachining:2 FSFFabrication:2 FSFDrugs:2 FSFRefining:2 FSFSmelt:2 FSFStoneCut:2 FSFNurse:1 FSFSurgeon:1 FSFButcher:2 FSFProduction:2 FSFHarvesting:2 FSFSnow:3 FSFSmoothing:2" />
+    <grant type="ThingDef" id="RPP_Bot_Omni_IV" field="mechWorkTypePriorities" jobs="FSFRearming:2 FSFTransport:2 FSFCremating:2 FSFHauling:2 FSFRepair:2 FSFDeconstruct:2 FSFDrilling:2 FSFMachining:2 FSFFabrication:2 FSFDrugs:2 FSFRefining:2 FSFSmelt:2 FSFStoneCut:2 FSFNurse:1 FSFSurgeon:1 FSFButcher:2 FSFProduction:2 FSFHarvesting:2 FSFSnow:3 FSFSmoothing:2" />
+    <grant type="ThingDef" id="RPP_Bot_Omni_IV" field="robotWorkTypes" jobs="FSFRearming:2 FSFTransport:2 FSFCremating:2 FSFHauling:2 FSFRepair:2 FSFDeconstruct:2 FSFDrilling:2 FSFMachining:2 FSFFabrication:2 FSFDrugs:2 FSFRefining:2 FSFSmelt:2 FSFStoneCut:2 FSFNurse:1 FSFSurgeon:1 FSFButcher:2 FSFProduction:2 FSFHarvesting:2 FSFSnow:3 FSFSmoothing:2" />
+    <grant type="ThingDef" id="RPP_Bot_Omni_V" field="mechEnabledWorkTypes" jobs="FSFSnow" />
+    <grant type="ThingDef" id="RPP_Bot_Omni_V" field="mechWorkTypePriorities" jobs="FSFRearming:2 FSFTransport:2 FSFCremating:2 FSFHauling:2 FSFRepair:2 FSFDeconstruct:2 FSFDrilling:2 FSFMachining:2 FSFFabrication:2 FSFDrugs:2 FSFRefining:2 FSFSmelt:2 FSFStoneCut:2 FSFNurse:1 FSFSurgeon:1 FSFButcher:2 FSFProduction:2 FSFHarvesting:2 FSFSnow:3 FSFSmoothing:2" />
+    <grant type="ThingDef" id="RPP_Bot_Omni_V" field="robotWorkTypes" jobs="FSFRearming:2 FSFTransport:2 FSFCremating:2 FSFHauling:2 FSFRepair:2 FSFDeconstruct:2 FSFDrilling:2 FSFMachining:2 FSFFabrication:2 FSFDrugs:2 FSFRefining:2 FSFSmelt:2 FSFStoneCut:2 FSFNurse:1 FSFSurgeon:1 FSFButcher:2 FSFProduction:2 FSFHarvesting:2 FSFSnow:3 FSFSmoothing:2" />
+    <grant type="VFETribals.TribalResearchProjectDef" id="VFET_Agriculture" field="unlocksWorkTypes" jobs="FSFHarvesting" />
+    <grant type="VFETribals.TribalResearchProjectDef" id="VFET_AnimalHandling" field="unlocksWorkTypes" jobs="FSFTraining" />
+    <grant type="VFETribals.TribalResearchProjectDef" id="VFET_Mining" field="unlocksWorkTypes" jobs="FSFDrilling" />
+  </capabilities>
+</workCatalog>

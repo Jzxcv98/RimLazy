@@ -103,17 +103,22 @@ public static class WorkPlanner
             }
             for (int g = 0; g < targets.Length; g++)
             {
-                // Water-fill equal coverage among this strategy's real columns, respecting scarce work.
-                var sorted = Enumerable.Range(0, works.Length).Where(w => groups[w] == g && limits[w] > Epsilon)
-                    .OrderBy(w => limits[w]).ToArray();
-                double remaining = targets[g];
-                for (int i = 0; i < sorted.Length; i++)
+                // Splitting hauling into delivery, loading and transport does not create extra labor demand.
+                // Give each family coverage first, then allocate that coverage among its actual columns.
+                var families = Enumerable.Range(0, works.Length).Where(w => groups[w] == g && limits[w] > Epsilon)
+                    .GroupBy(w => works[w].WorkFamily ?? works[w].Id, StringComparer.Ordinal)
+                    .Select(family => family.ToArray()).ToArray();
+                var familyShares = CappedShares(families.Select(f => f.Sum(w => limits[w])).ToArray(), targets[g]);
+                for (int f = 0; f < families.Length; f++)
                 {
-                    int w = sorted[i];
-                    double share = Math.Min(limits[w], remaining / (sorted.Length - i));
-                    flow.Add(workStart + w, groupStart + g, share, 0);
-                    flow.Add(workStart + w, groupStart + g, limits[w] - share, 10_000);
-                    remaining = Math.Max(0, remaining - share);
+                    var family = families[f];
+                    var shares = CappedShares(family.Select(w => limits[w]).ToArray(), familyShares[f]);
+                    for (int j = 0; j < family.Length; j++)
+                    {
+                        int w = family[j];
+                        flow.Add(workStart + w, groupStart + g, shares[j], 0);
+                        flow.Add(workStart + w, groupStart + g, limits[w] - shares[j], 10_000);
+                    }
                 }
                 flow.Add(groupStart + g, sink, minimums[g], 0);
                 flow.Add(groupStart + g, sink, Math.Max(0, targets[g] - minimums[g]), 1_000_000);
@@ -122,6 +127,19 @@ public static class WorkPlanner
             var result = new double[people.Length, works.Length];
             foreach (var (p, w, edge) in assignments) result[p, w] = edge.Reverse.Remaining;
             return result;
+        }
+
+        private static double[] CappedShares(double[] capacities, double budget)
+        {
+            var shares = new double[capacities.Length];
+            int remaining = capacities.Length;
+            foreach (int i in Enumerable.Range(0, capacities.Length).OrderBy(i => capacities[i]))
+            {
+                shares[i] = Math.Min(capacities[i], budget / remaining);
+                budget = Math.Max(0, budget - shares[i]);
+                remaining--;
+            }
+            return shares;
         }
 
         public int[,] Rank(double[,] allocation, bool preserveRemainder)

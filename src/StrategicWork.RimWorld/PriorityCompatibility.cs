@@ -22,6 +22,20 @@ public static class PriorityCompatibility
 
 internal static class PriorityDomain
 {
+    internal static int NativeTableMaximum(int ownLimit)
+    {
+        if (PriorityCompatibility.Readers.Count == 0) return ownLimit;
+        int cap = NativePrioritySettings.Limit;
+        bool hasProvider = false;
+        foreach (var (id, read) in PriorityCompatibility.Readers)
+        {
+            if (!ModsConfig.IsActive(id)) continue;
+            cap = Math.Min(cap, Math.Clamp(read(), 1, NativePrioritySettings.Limit));
+            hasProvider = true;
+        }
+        return hasProvider ? cap : ownLimit;
+    }
+
     internal static (int Max, string Source) Resolve(int observed, int requested)
     {
         int vanilla = (int)typeof(Pawn_WorkSettings).GetField(nameof(Pawn_WorkSettings.LowestPriority))!.GetRawConstantValue()!;
@@ -37,6 +51,11 @@ internal static class PriorityDomain
         {
             ceiling = limits.Min(p => p.Max);
             source = "RimLazy_RangeProvider".Translate(string.Join(", ", limits.Select(p => p.Id))).ToString();
+        }
+        else if (NativeWorkPriorities.Active)
+        {
+            ceiling = Math.Max(NativeWorkPriorities.ConfiguredOrSavedMax, Math.Min(NativePrioritySettings.Limit, observed));
+            source = "RimLazy_RangeNative".Translate().ToString();
         }
         else if (observed > vanilla)
         {

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimLazy_MaxPriority>工作优先级档数（1–99）</RimLazy_MaxPriority>
+  <RimLazy_DefaultPriority>启用工作的默认档位</RimLazy_DefaultPriority>
+  <RimLazy_RangeNative>RimLazy 工作表</RimLazy_RangeNative>
+  <RimLazy_PriorityGradient>使用渐变配色</RimLazy_PriorityGradient>
+  <RimLazy_GradientStops>从最高到最低优先级的渐变颜色。用逗号分隔 #RRGGBB 色值。</RimLazy_GradientStops>
+  <RimLazy_IndividualColors>依次填写第 1、2、3 档的颜色，用逗号分隔 #RRGGBB 色值。其余档位沿用最后一种颜色。</RimLazy_IndividualColors>
+  <RimLazy_InvalidColors>请按 #RRGGBB 格式填写 1 至 99 种颜色。</RimLazy_InvalidColors>
+  <RimLazy_InvalidPrioritySettings>档数范围为 1–99，默认优先级应在 1 到最高可用档数之间。</RimLazy_InvalidPrioritySettings>
+  <RimLazy_PriorityInUse>当前存档仍有殖民者在使用第 {0} 档。请先调整相关工作，再降低档位上限。</RimLazy_PriorityInUse>
+  <RimLazy_SaveWorkSettings>应用优先级设置</RimLazy_SaveWorkSettings>
+  <RimLazy_WorkSettingsSaved>已保存优先级设置。</RimLazy_WorkSettingsSaved>
+  <RimLazy_PriorityTooltip>优先级 {0}（共 {1} 档）</RimLazy_PriorityTooltip>
+  <RimLazy_JobSettingsButton>工作细分设置…</RimLazy_JobSettingsButton>
+</LanguageData>

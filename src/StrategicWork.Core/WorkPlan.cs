@@ -1,7 +1,8 @@
 namespace StrategicWork.Core;
 
 // Labor and capacity use the same unit: one colonist available for the planning horizon.
-public sealed record WorkColumn(string Id, string? StrategyId, int NaturalPriority = 0, double? Capacity = null);
+public sealed record WorkColumn(string Id, string? StrategyId, int NaturalPriority = 0, double? Capacity = null,
+    string? WorkFamily = null);
 public sealed record PawnInput(string Id, IReadOnlyDictionary<string, WorkCell> Cells, double Labor = 1);
 public sealed record WorkCell(int Current, bool Eligible, double Suitability, bool Locked = false);
 public sealed record PlannedCell(string PawnId, string WorkId, int Before, int After, double EstimatedLabor);

@@ -16,6 +16,37 @@ public sealed class WorkPlannerTests
         plan.Cells.Single(x => x.PawnId == p && x.WorkId == w);
 
     [TestMethod]
+    public void AddingDeliveryAndLoadingColumnsDoesNotTripleTheLogisticsBudget()
+    {
+        WorkColumn[] work =
+        [
+            new("haul", "industry", WorkFamily: "logistics"), new("deliver", "industry", WorkFamily: "logistics"),
+            new("load", "industry", WorkFamily: "logistics"), new("fabricate", "industry", WorkFamily: "production")
+        ];
+        var workers = Enumerable.Range(0, 6).Select(i => new PawnInput($"p{i}", work.ToDictionary(
+            w => w.Id, w => new WorkCell(0, true, i < 3 && w.Id == work[i].Id ? 5 : 1)))).ToArray();
+        var result = WorkPlanner.Plan(workers, work, Policy(new StrategyAllocation("industry", 0, 1)), 6);
+        var hours = result.Cells.GroupBy(c => c.WorkId).ToDictionary(g => g.Key, g => g.Sum(c => c.EstimatedLabor));
+        Assert.AreEqual(3d, hours["fabricate"]);
+        foreach (var id in new[] { "haul", "deliver", "load" }) Assert.AreEqual(1d, hours[id]);
+    }
+
+    [TestMethod]
+    public void EmptySurgeryQueueReleasesMedicalTimeToNursingAndKeepsASurgeonOnStandby()
+    {
+        WorkColumn[] work = [new("nurse", "care", WorkFamily: "medicine"), new("surgeon", "care", Capacity: 0, WorkFamily: "medicine")];
+        PawnInput[] workers =
+        [
+            Pawn("runner", ("nurse", new(0, true, 2)), ("surgeon", new(0, true, 0.4))),
+            Pawn("doctor", ("nurse", new(0, true, 1)), ("surgeon", new(0, true, 4)))
+        ];
+        var result = WorkPlanner.Plan(workers, work, Policy(new StrategyAllocation("care", 0, 1)), 6);
+        Assert.AreEqual(2d, result.Cells.Where(c => c.WorkId == "nurse").Sum(c => c.EstimatedLabor));
+        Assert.AreEqual(0d, At(result, "doctor", "surgeon").EstimatedLabor);
+        Assert.AreEqual(6, At(result, "doctor", "surgeon").After);
+    }
+
+    [TestMethod]
     public void AssignsGeneralistToCoverTheJobThatTheSpecialistCannotDo()
     {
         WorkColumn[] works = [new("mine", "build"), new("study", "tech")];

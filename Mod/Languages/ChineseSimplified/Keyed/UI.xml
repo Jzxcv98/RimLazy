@@ -34,7 +34,7 @@
   <RimLazy_DefaultPreset>均衡（默认）</RimLazy_DefaultPreset>
   <RimLazy_NoCapture>暂未读取到工作类型。请点击预览重新读取。</RimLazy_NoCapture>
   <RimLazy_Detected>当前可用优先级为 1 至 {0} 档。来源：{1}</RimLazy_Detected>
-  <RimLazy_OverrideHint>规划上限（0 为自动）。若模组的最高档尚未识别，先在游戏工作表中把任意一格设到该档，再预览。</RimLazy_OverrideHint>
+  <RimLazy_OverrideHint>本地图的分配上限，0 表示使用工作表的全部档位。要调整工作表本身的档数，请打开模组设置中的 RimLazy。</RimLazy_OverrideHint>
   <RimLazy_MappingHelp>将工作列分配到战略方向。选择「保留原值」后，该列保留各殖民者现有的优先级。</RimLazy_MappingHelp>
   <RimLazy_KeepColumn>保留原值</RimLazy_KeepColumn>
   <RimLazy_Automatic>自动 · {0}</RimLazy_Automatic>

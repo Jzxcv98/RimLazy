@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimLazy_Detail_FSFTaming>驯服动物</RimLazy_Detail_FSFTaming>
+  <RimLazy_Detail_FSFSlaughter>宰杀动物</RimLazy_Detail_FSFSlaughter>
+  <RimLazy_Detail_FSFConvert>信仰转化</RimLazy_Detail_FSFConvert>
+  <RimLazy_Detail_FSFPrisonCare>囚犯照护</RimLazy_Detail_FSFPrisonCare>
+  <RimLazy_Detail_FSFHack>入侵终端</RimLazy_Detail_FSFHack>
+  <RimLazy_Detail_FSFTeach>教学</RimLazy_Detail_FSFTeach>
+  <RimLazy_Detail_FSFSelfTend>自行包扎</RimLazy_Detail_FSFSelfTend>
+  <RimLazy_Detail_FSFRescue>救援</RimLazy_Detail_FSFRescue>
+  <RimLazy_Detail_FSFPollution>清理污染</RimLazy_Detail_FSFPollution>
+  <RimLazy_Detail_FSFSnow>清雪</RimLazy_Detail_FSFSnow>
+  <RimLazy_Detail_FSFMerge>合并物堆</RimLazy_Detail_FSFMerge>
+  <RimLazy_Detail_FSFPaint>涂装</RimLazy_Detail_FSFPaint>
+  <RimLazy_Detail_FSFMechanoids>机械族作业</RimLazy_Detail_FSFMechanoids>
+  <RimLazy_Detail_FSFPruning>修剪</RimLazy_Detail_FSFPruning>
+  <RimLazy_Detail_FSFSmoothing>打磨岩石</RimLazy_Detail_FSFSmoothing>
+  <RimLazy_Detail_FSFAnomalyTasksInDarkStudy>实体工作归入黑暗研究</RimLazy_Detail_FSFAnomalyTasksInDarkStudy>
+  <RimLazy_Detail_FSFDraftedWorkTasks>允许征召期间执行工作指令</RimLazy_Detail_FSFDraftedWorkTasks>
+  <RimLazy_Detail_FSFIdeoRolesAreCapable>解除意识形态专家的工作与武器限制</RimLazy_Detail_FSFIdeoRolesAreCapable>
+  <RimLazy_Detail_FSFMechanoidsAreCapable>允许机械族执行更多任务</RimLazy_Detail_FSFMechanoidsAreCapable>
+  <RimLazy_Detail_FSFRescueInFirefighting>允许消防员救援</RimLazy_Detail_FSFRescueInFirefighting>
+  <RimLazy_Detail_FSFSlavesAreCapable>允许奴隶从事看守以外的受限工作</RimLazy_Detail_FSFSlavesAreCapable>
+  <RimLazy_Detail_FSFWarcasketsAreCapable>解除战争棺材工作限制</RimLazy_Detail_FSFWarcasketsAreCapable>
+  <RimLazy_Detail_Title>细分工作设置</RimLazy_Detail_Title>
+  <RimLazy_Detail_Hint>重启游戏后生效。关闭可选工作列时，其任务并回对应的常规分工。</RimLazy_Detail_Hint>
+  <RimLazy_Detail_Columns>可选工作列</RimLazy_Detail_Columns>
+  <RimLazy_Detail_Rules>其他工作规则</RimLazy_Detail_Rules>
+  <RimLazy_Detail_Saved>已保存。重启游戏后会加载新的工作定义。</RimLazy_Detail_Saved>
+</LanguageData>

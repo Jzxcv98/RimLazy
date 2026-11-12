@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimLazy_MaxPriority>Work priority levels (1–99)</RimLazy_MaxPriority>
+  <RimLazy_DefaultPriority>Default enabled priority</RimLazy_DefaultPriority>
+  <RimLazy_RangeNative>RimLazy work table</RimLazy_RangeNative>
+  <RimLazy_PriorityGradient>Use a color gradient</RimLazy_PriorityGradient>
+  <RimLazy_GradientStops>Gradient colors from highest to lowest priority. Separate #RRGGBB colors with commas.</RimLazy_GradientStops>
+  <RimLazy_IndividualColors>Colors for priorities 1, 2, 3, etc. Separate #RRGGBB colors with commas. The last color covers all remaining levels.</RimLazy_IndividualColors>
+  <RimLazy_InvalidColors>Enter one to 99 colors in #RRGGBB format.</RimLazy_InvalidColors>
+  <RimLazy_InvalidPrioritySettings>Choose 1–99 levels and a default between 1 and the maximum.</RimLazy_InvalidPrioritySettings>
+  <RimLazy_PriorityInUse>This game has a colonist using level {0}. Adjust their work priorities before lowering the maximum.</RimLazy_PriorityInUse>
+  <RimLazy_SaveWorkSettings>Apply priority settings</RimLazy_SaveWorkSettings>
+  <RimLazy_WorkSettingsSaved>Priority settings saved.</RimLazy_WorkSettingsSaved>
+  <RimLazy_PriorityTooltip>Priority {0} of {1}</RimLazy_PriorityTooltip>
+  <RimLazy_JobSettingsButton>Configure work categories…</RimLazy_JobSettingsButton>
+</LanguageData>

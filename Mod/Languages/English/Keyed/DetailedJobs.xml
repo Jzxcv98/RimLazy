@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimLazy_Detail_FSFTaming>Taming</RimLazy_Detail_FSFTaming>
+  <RimLazy_Detail_FSFSlaughter>Animal slaughter</RimLazy_Detail_FSFSlaughter>
+  <RimLazy_Detail_FSFConvert>Conversion</RimLazy_Detail_FSFConvert>
+  <RimLazy_Detail_FSFPrisonCare>Prison care</RimLazy_Detail_FSFPrisonCare>
+  <RimLazy_Detail_FSFHack>Hacking</RimLazy_Detail_FSFHack>
+  <RimLazy_Detail_FSFTeach>Teaching</RimLazy_Detail_FSFTeach>
+  <RimLazy_Detail_FSFSelfTend>Self-tend</RimLazy_Detail_FSFSelfTend>
+  <RimLazy_Detail_FSFRescue>Rescue</RimLazy_Detail_FSFRescue>
+  <RimLazy_Detail_FSFPollution>Clean pollution</RimLazy_Detail_FSFPollution>
+  <RimLazy_Detail_FSFSnow>Clear snow</RimLazy_Detail_FSFSnow>
+  <RimLazy_Detail_FSFMerge>Consolidate</RimLazy_Detail_FSFMerge>
+  <RimLazy_Detail_FSFPaint>Painting</RimLazy_Detail_FSFPaint>
+  <RimLazy_Detail_FSFMechanoids>Mech work</RimLazy_Detail_FSFMechanoids>
+  <RimLazy_Detail_FSFPruning>Pruning</RimLazy_Detail_FSFPruning>
+  <RimLazy_Detail_FSFSmoothing>Smoothing</RimLazy_Detail_FSFSmoothing>
+  <RimLazy_Detail_FSFAnomalyTasksInDarkStudy>Entity duties under dark study</RimLazy_Detail_FSFAnomalyTasksInDarkStudy>
+  <RimLazy_Detail_FSFDraftedWorkTasks>Allow work orders while drafted</RimLazy_Detail_FSFDraftedWorkTasks>
+  <RimLazy_Detail_FSFIdeoRolesAreCapable>Lift specialist role work and weapon restrictions</RimLazy_Detail_FSFIdeoRolesAreCapable>
+  <RimLazy_Detail_FSFMechanoidsAreCapable>Allow additional mech work tasks</RimLazy_Detail_FSFMechanoidsAreCapable>
+  <RimLazy_Detail_FSFRescueInFirefighting>Allow firefighting workers to rescue</RimLazy_Detail_FSFRescueInFirefighting>
+  <RimLazy_Detail_FSFSlavesAreCapable>Allow slaves to perform restricted work except wardening</RimLazy_Detail_FSFSlavesAreCapable>
+  <RimLazy_Detail_FSFWarcasketsAreCapable>Lift warcasket work restrictions</RimLazy_Detail_FSFWarcasketsAreCapable>
+  <RimLazy_Detail_Title>Detailed work settings</RimLazy_Detail_Title>
+  <RimLazy_Detail_Hint>Changes take effect after restarting RimWorld. Standard duties remain available when their optional column is turned off.</RimLazy_Detail_Hint>
+  <RimLazy_Detail_Columns>Optional work columns</RimLazy_Detail_Columns>
+  <RimLazy_Detail_Rules>Other work rules</RimLazy_Detail_Rules>
+  <RimLazy_Detail_Saved>Saved. Restart RimWorld to load the new work definitions.</RimLazy_Detail_Saved>
+</LanguageData>

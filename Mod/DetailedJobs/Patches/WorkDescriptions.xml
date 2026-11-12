@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <Operation Class="PatchOperationReplace">
+    <xpath>Defs/WorkTypeDef[defName="Hauling"]/labelShort</xpath>
+    <value>
+      <labelShort>Upkeep</labelShort>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <xpath>Defs/WorkTypeDef[defName="Hauling"]/pawnLabel</xpath>
+    <value>
+      <pawnLabel>maintenance worker</pawnLabel>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <xpath>Defs/WorkTypeDef[defName="Hauling"]/gerundLabel</xpath>
+    <value>
+      <gerundLabel>maintaining facilities</gerundLabel>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <xpath>Defs/WorkTypeDef[defName="Hauling"]/verb</xpath>
+    <value>
+      <verb>maintain facilities</verb>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <xpath>Defs/WorkTypeDef[defName="Hauling"]/description</xpath>
+    <value>
+      <description>Refuel, replenish and service colony facilities. Stockpile transport and construction delivery have separate priorities.</description>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <xpath>Defs/WorkTypeDef[defName="Cooking"]/description</xpath>
+    <value>
+      <description>Prepare meals at cooking stations. Butchering has its own work column.</description>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <xpath>Defs/WorkTypeDef[defName="Doctor"]/description</xpath>
+    <value>
+      <description>Tend wounds and illnesses. Nursing and surgery have separate priorities.</description>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <xpath>Defs/WorkTypeDef[defName="Growing"]/description</xpath>
+    <value>
+      <description>Prepare growing areas and sow crops. Harvesters gather the mature plants.</description>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <xpath>Defs/WorkTypeDef[defName="Mining"]/description</xpath>
+    <value>
+      <description>Excavate designated rock and mineral deposits. Deep drilling has its own work column.</description>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <xpath>Defs/WorkTypeDef[defName="Construction"]/description</xpath>
+    <value>
+      <description>Build and install designated structures. Supply delivery, repair and dismantling have their own priorities.</description>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <xpath>Defs/WorkTypeDef[defName="Handling"]/description</xpath>
+    <value>
+      <description>Care for livestock and gather animal products. Training is assigned separately.</description>
+    </value>
+  </Operation>
+</Patch>

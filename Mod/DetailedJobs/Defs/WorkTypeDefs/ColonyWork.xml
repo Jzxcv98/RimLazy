@@ -1,0 +1,631 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <WorkTypeDef>
+    <defName>FSFNurse</defName>
+    <labelShort>Nursing</labelShort>
+    <pawnLabel>Nursing worker</pawnLabel>
+    <gerundLabel>nursing</gerundLabel>
+    <description>Provide bedside care, food and transport to patients.</description>
+    <verb>nursing</verb>
+    <naturalPriority>1295</naturalPriority>
+    <workTags>
+      <li>Caring</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Medicine</li>
+    </relevantSkills>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFSurgeon</defName>
+    <labelShort>Surgery</labelShort>
+    <pawnLabel>Surgery worker</pawnLabel>
+    <gerundLabel>surgery</gerundLabel>
+    <description>Perform operations on patients.</description>
+    <verb>surgery</verb>
+    <naturalPriority>1290</naturalPriority>
+    <workTags>
+      <li>Caring</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Medicine</li>
+    </relevantSkills>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFRearming</defName>
+    <labelShort>Rearm</labelShort>
+    <pawnLabel>Rearm worker</pawnLabel>
+    <gerundLabel>rearm</gerundLabel>
+    <description>Supply ammunition and restore traps and defensive equipment.</description>
+    <verb>rearm</verb>
+    <naturalPriority>1135</naturalPriority>
+    <workTags>
+      <li>ManualDumb</li>
+      <li>Hauling</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <requireCapableColonist>true</requireCapableColonist>
+    <alwaysStartActive>true</alwaysStartActive>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFTraining</defName>
+    <labelShort>Animal training</labelShort>
+    <pawnLabel>Animal training worker</pawnLabel>
+    <gerundLabel>animal training</gerundLabel>
+    <description>Tame animals and maintain their learned skills.</description>
+    <verb>animal training</verb>
+    <naturalPriority>1045</naturalPriority>
+    <workTags>
+      <li>Animals</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Animals</li>
+    </relevantSkills>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFButcher</defName>
+    <labelShort>Butchery</labelShort>
+    <pawnLabel>Butchery worker</pawnLabel>
+    <gerundLabel>butchery</gerundLabel>
+    <description>Process carcasses for food and materials.</description>
+    <verb>butchery</verb>
+    <naturalPriority>995</naturalPriority>
+    <workTags>
+      <li>Cooking</li>
+      <li>ManualSkilled</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Cooking</li>
+    </relevantSkills>
+    <requireCapableColonist>true</requireCapableColonist>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFRepair</defName>
+    <labelShort>Repairs</labelShort>
+    <pawnLabel>Repairs worker</pawnLabel>
+    <gerundLabel>repairs</gerundLabel>
+    <description>Restore damaged buildings and equipment.</description>
+    <verb>repairs</verb>
+    <naturalPriority>910</naturalPriority>
+    <workTags>
+      <li>ManualSkilled</li>
+      <li>Commoner</li>
+      <li>Constructing</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Construction</li>
+    </relevantSkills>
+    <requireCapableColonist>true</requireCapableColonist>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFDeconstruct</defName>
+    <labelShort>Dismantle</labelShort>
+    <pawnLabel>Dismantle worker</pawnLabel>
+    <gerundLabel>dismantle</gerundLabel>
+    <description>Take apart designated structures.</description>
+    <verb>dismantle</verb>
+    <naturalPriority>905</naturalPriority>
+    <workTags>
+      <li>ManualSkilled</li>
+      <li>Commoner</li>
+      <li>Constructing</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Construction</li>
+    </relevantSkills>
+    <requireCapableColonist>true</requireCapableColonist>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFHarvesting</defName>
+    <labelShort>Harvest</labelShort>
+    <pawnLabel>Harvest worker</pawnLabel>
+    <gerundLabel>harvest</gerundLabel>
+    <description>Gather mature crops and other designated harvests.</description>
+    <verb>harvest</verb>
+    <naturalPriority>705</naturalPriority>
+    <workTags>
+      <li>ManualSkilled</li>
+      <li>PlantWork</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Plants</li>
+    </relevantSkills>
+    <requireCapableColonist>true</requireCapableColonist>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFDrilling</defName>
+    <labelShort>Drilling</labelShort>
+    <pawnLabel>Drilling worker</pawnLabel>
+    <gerundLabel>drilling</gerundLabel>
+    <description>Operate drills and mineral extraction equipment.</description>
+    <verb>drilling</verb>
+    <naturalPriority>595</naturalPriority>
+    <workTags>
+      <li>ManualSkilled</li>
+      <li>Mining</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Mining</li>
+    </relevantSkills>
+    <requireCapableColonist>true</requireCapableColonist>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFDrugs</defName>
+    <labelShort>Drug making</labelShort>
+    <pawnLabel>Drug making worker</pawnLabel>
+    <gerundLabel>drug making</gerundLabel>
+    <description>Make drugs and medicines at workstations.</description>
+    <verb>drug making</verb>
+    <naturalPriority>500</naturalPriority>
+    <workTags>
+      <li>Crafting</li>
+      <li>Intellectual</li>
+      <li>ManualSkilled</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Intellectual</li>
+    </relevantSkills>
+    <requireCapableColonist>true</requireCapableColonist>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFMachining</defName>
+    <labelShort>Machining</labelShort>
+    <pawnLabel>Machining worker</pawnLabel>
+    <gerundLabel>machining</gerundLabel>
+    <description>Carry out machining bills.</description>
+    <verb>machining</verb>
+    <naturalPriority>470</naturalPriority>
+    <workTags>
+      <li>Crafting</li>
+      <li>ManualSkilled</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Crafting</li>
+    </relevantSkills>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFFabrication</defName>
+    <labelShort>Fabrication</labelShort>
+    <pawnLabel>Fabrication worker</pawnLabel>
+    <gerundLabel>fabrication</gerundLabel>
+    <description>Run fabrication bills for advanced parts and equipment.</description>
+    <verb>fabrication</verb>
+    <naturalPriority>465</naturalPriority>
+    <workTags>
+      <li>Crafting</li>
+      <li>ManualSkilled</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Crafting</li>
+    </relevantSkills>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFRefining</defName>
+    <labelShort>Refining</labelShort>
+    <pawnLabel>Refining worker</pawnLabel>
+    <gerundLabel>refining</gerundLabel>
+    <description>Refine resources into usable material.</description>
+    <verb>refining</verb>
+    <naturalPriority>425</naturalPriority>
+    <workTags>
+      <li>Crafting</li>
+      <li>ManualSkilled</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Crafting</li>
+    </relevantSkills>
+    <requireCapableColonist>true</requireCapableColonist>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFProduction</defName>
+    <labelShort>Processing</labelShort>
+    <pawnLabel>Processing worker</pawnLabel>
+    <gerundLabel>processing</gerundLabel>
+    <description>Tend production equipment and process batches of resources.</description>
+    <verb>processing</verb>
+    <naturalPriority>415</naturalPriority>
+    <workTags>
+      <li>ManualSkilled</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <requireCapableColonist>true</requireCapableColonist>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFSmelt</defName>
+    <labelShort>Smelting</labelShort>
+    <pawnLabel>Smelting worker</pawnLabel>
+    <gerundLabel>smelting</gerundLabel>
+    <description>Smelt down materials and surplus items.</description>
+    <verb>smelting</verb>
+    <naturalPriority>410</naturalPriority>
+    <workTags>
+      <li>ManualSkilled</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFStoneCut</defName>
+    <labelShort>Stonecutting</labelShort>
+    <pawnLabel>Stonecutting worker</pawnLabel>
+    <gerundLabel>stonecutting</gerundLabel>
+    <description>Cut stone into building blocks.</description>
+    <verb>stonecutting</verb>
+    <naturalPriority>405</naturalPriority>
+    <workTags>
+      <li>ManualSkilled</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFTransport</defName>
+    <labelShort>Transport</labelShort>
+    <pawnLabel>Transport worker</pawnLabel>
+    <gerundLabel>transport</gerundLabel>
+    <description>Load transport equipment and prepare cargo.</description>
+    <verb>transport</verb>
+    <naturalPriority>325</naturalPriority>
+    <workTags>
+      <li>ManualDumb</li>
+      <li>Hauling</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <requireCapableColonist>true</requireCapableColonist>
+    <alwaysStartActive>true</alwaysStartActive>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFCremating</defName>
+    <labelShort>Disposal</labelShort>
+    <pawnLabel>Disposal worker</pawnLabel>
+    <gerundLabel>disposal</gerundLabel>
+    <description>Operate disposal stations for bodies and unwanted items.</description>
+    <verb>disposal</verb>
+    <naturalPriority>320</naturalPriority>
+    <workTags>
+      <li>ManualDumb</li>
+      <li>Hauling</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <requireCapableColonist>true</requireCapableColonist>
+    <alwaysStartActive>true</alwaysStartActive>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFDeliver</defName>
+    <labelShort>Supply builds</labelShort>
+    <pawnLabel>Supply builds worker</pawnLabel>
+    <gerundLabel>supply builds</gerundLabel>
+    <description>Carry materials to designated blueprints and frames.</description>
+    <verb>supply builds</verb>
+    <naturalPriority>310</naturalPriority>
+    <workTags>
+      <li>ManualDumb</li>
+      <li>Hauling</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <requireCapableColonist>true</requireCapableColonist>
+    <alwaysStartActive>true</alwaysStartActive>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFHauling</defName>
+    <labelShort>Storage</labelShort>
+    <pawnLabel>Storage worker</pawnLabel>
+    <gerundLabel>storage</gerundLabel>
+    <description>Move loose goods to storage and deliver construction materials.</description>
+    <verb>storage</verb>
+    <naturalPriority>295</naturalPriority>
+    <workTags>
+      <li>ManualDumb</li>
+      <li>Hauling</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <requireCapableColonist>true</requireCapableColonist>
+    <alwaysStartActive>true</alwaysStartActive>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFScan</defName>
+    <labelShort>Scanning</labelShort>
+    <pawnLabel>Scanning worker</pawnLabel>
+    <gerundLabel>scanning</gerundLabel>
+    <description>Operate scanning equipment to locate resources.</description>
+    <verb>scanning</verb>
+    <naturalPriority>95</naturalPriority>
+    <workTags>
+      <li>Intellectual</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Intellectual</li>
+    </relevantSkills>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFTaming</defName>
+    <labelShort>Taming</labelShort>
+    <pawnLabel>Taming worker</pawnLabel>
+    <gerundLabel>taming</gerundLabel>
+    <description>Tame designated wild animals.</description>
+    <verb>taming</verb>
+    <naturalPriority>1055</naturalPriority>
+    <workTags>
+      <li>Animals</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Animals</li>
+    </relevantSkills>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFSlaughter</defName>
+    <labelShort>Animal slaughter</labelShort>
+    <pawnLabel>Animal slaughter worker</pawnLabel>
+    <gerundLabel>animal slaughter</gerundLabel>
+    <description>Slaughter designated livestock.</description>
+    <verb>animal slaughter</verb>
+    <naturalPriority>1056</naturalPriority>
+    <workTags>
+      <li>Animals</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Animals</li>
+    </relevantSkills>
+  </WorkTypeDef>
+  <WorkTypeDef MayRequire="Ludeon.RimWorld.Ideology">
+    <defName>FSFConvert</defName>
+    <labelShort>Conversion</labelShort>
+    <pawnLabel>Conversion worker</pawnLabel>
+    <gerundLabel>conversion</gerundLabel>
+    <description>Convert prisoners to a different ideoligion.</description>
+    <verb>conversion</verb>
+    <naturalPriority>1105</naturalPriority>
+    <workTags>
+      <li>Social</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Social</li>
+    </relevantSkills>
+    <requireCapableColonist>true</requireCapableColonist>
+    <disabledForSlaves>true</disabledForSlaves>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFPrisonCare</defName>
+    <labelShort>Prison care</labelShort>
+    <pawnLabel>Prison care worker</pawnLabel>
+    <gerundLabel>prison care</gerundLabel>
+    <description>Bring food and provide routine care to prisoners.</description>
+    <verb>prison care</verb>
+    <naturalPriority>1110</naturalPriority>
+    <workTags>
+      <li>Caring</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Medicine</li>
+    </relevantSkills>
+    <requireCapableColonist>true</requireCapableColonist>
+    <disabledForSlaves>true</disabledForSlaves>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFHack</defName>
+    <labelShort>Hacking</labelShort>
+    <pawnLabel>Hacking worker</pawnLabel>
+    <gerundLabel>hacking</gerundLabel>
+    <description>Access designated terminals and hackable objects.</description>
+    <verb>hacking</verb>
+    <naturalPriority>115</naturalPriority>
+    <workTags>
+      <li>Intellectual</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Intellectual</li>
+    </relevantSkills>
+    <disabledForSlaves>true</disabledForSlaves>
+  </WorkTypeDef>
+  <WorkTypeDef MayRequire="Ludeon.RimWorld.Biotech">
+    <defName>FSFTeach</defName>
+    <labelShort>Teaching</labelShort>
+    <pawnLabel>Teaching worker</pawnLabel>
+    <gerundLabel>teaching</gerundLabel>
+    <description>Give lessons and help children learn.</description>
+    <verb>teaching</verb>
+    <naturalPriority>1174</naturalPriority>
+    <workTags>
+      <li>Social</li>
+      <li>Caring</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Social</li>
+    </relevantSkills>
+    <requireCapableColonist>true</requireCapableColonist>
+    <alwaysStartActive>true</alwaysStartActive>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFSelfTend</defName>
+    <labelShort>Self-tend</labelShort>
+    <pawnLabel>Self-tend worker</pawnLabel>
+    <gerundLabel>self-tend</gerundLabel>
+    <description>Treat personal wounds when self-tending is permitted.</description>
+    <verb>self-tend</verb>
+    <naturalPriority>1355</naturalPriority>
+    <workTags>
+      <li>Caring</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Medicine</li>
+    </relevantSkills>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFRescue</defName>
+    <labelShort>Rescue</labelShort>
+    <pawnLabel>Rescue worker</pawnLabel>
+    <gerundLabel>rescue</gerundLabel>
+    <description>Carry downed patients to a safe bed.</description>
+    <verb>rescue</verb>
+    <naturalPriority>1410</naturalPriority>
+    <workTags>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <alwaysStartActive>true</alwaysStartActive>
+  </WorkTypeDef>
+  <WorkTypeDef MayRequire="Ludeon.RimWorld.Biotech">
+    <defName>FSFPollution</defName>
+    <labelShort>Clean pollution</labelShort>
+    <pawnLabel>Clean pollution worker</pawnLabel>
+    <gerundLabel>clean pollution</gerundLabel>
+    <description>Remove toxic pollution from designated areas.</description>
+    <verb>clean pollution</verb>
+    <naturalPriority>195</naturalPriority>
+    <workTags>
+      <li>ManualDumb</li>
+      <li>Cleaning</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <requireCapableColonist>true</requireCapableColonist>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFSnow</defName>
+    <labelShort>Clear snow</labelShort>
+    <pawnLabel>Clear snow worker</pawnLabel>
+    <gerundLabel>clear snow</gerundLabel>
+    <description>Clear snow from designated paths.</description>
+    <verb>clear snow</verb>
+    <naturalPriority>215</naturalPriority>
+    <workTags>
+      <li>ManualDumb</li>
+      <li>Cleaning</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <requireCapableColonist>true</requireCapableColonist>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFMerge</defName>
+    <labelShort>Consolidate</labelShort>
+    <pawnLabel>Consolidate worker</pawnLabel>
+    <gerundLabel>consolidate</gerundLabel>
+    <description>Merge partial stacks in storage.</description>
+    <verb>consolidate</verb>
+    <naturalPriority>305</naturalPriority>
+    <workTags>
+      <li>ManualDumb</li>
+      <li>Hauling</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <requireCapableColonist>true</requireCapableColonist>
+    <alwaysStartActive>true</alwaysStartActive>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFPaint</defName>
+    <labelShort>Painting</labelShort>
+    <pawnLabel>Painting worker</pawnLabel>
+    <gerundLabel>painting</gerundLabel>
+    <description>Apply and remove paint on floors and buildings.</description>
+    <verb>painting</verb>
+    <naturalPriority>435</naturalPriority>
+    <workTags>
+      <li>Artistic</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Artistic</li>
+    </relevantSkills>
+    <disabledForSlaves>true</disabledForSlaves>
+  </WorkTypeDef>
+  <WorkTypeDef MayRequire="Ludeon.RimWorld.Biotech">
+    <defName>FSFMechanoids</defName>
+    <labelShort>Mech work</labelShort>
+    <pawnLabel>Mech work worker</pawnLabel>
+    <gerundLabel>mech work</gerundLabel>
+    <description>Service and work on mechanoids.</description>
+    <verb>mech work</verb>
+    <naturalPriority>490</naturalPriority>
+    <workTags>
+      <li>Crafting</li>
+      <li>ManualSkilled</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Crafting</li>
+    </relevantSkills>
+  </WorkTypeDef>
+  <WorkTypeDef MayRequire="Ludeon.RimWorld.Ideology">
+    <defName>FSFPruning</defName>
+    <labelShort>Pruning</labelShort>
+    <pawnLabel>Pruning worker</pawnLabel>
+    <gerundLabel>pruning</gerundLabel>
+    <description>Prune plants requiring special care.</description>
+    <verb>pruning</verb>
+    <naturalPriority>715</naturalPriority>
+    <workTags>
+      <li>ManualSkilled</li>
+      <li>PlantWork</li>
+      <li>Commoner</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Plants</li>
+    </relevantSkills>
+    <requireCapableColonist>true</requireCapableColonist>
+  </WorkTypeDef>
+  <WorkTypeDef>
+    <defName>FSFSmoothing</defName>
+    <labelShort>Smoothing</labelShort>
+    <pawnLabel>Smoothing worker</pawnLabel>
+    <gerundLabel>smoothing</gerundLabel>
+    <description>Smooth designated stone walls and floors.</description>
+    <verb>smoothing</verb>
+    <naturalPriority>895</naturalPriority>
+    <workTags>
+      <li>ManualSkilled</li>
+      <li>Commoner</li>
+      <li>Constructing</li>
+      <li>AllWork</li>
+    </workTags>
+    <relevantSkills>
+      <li>Construction</li>
+    </relevantSkills>
+    <requireCapableColonist>true</requireCapableColonist>
+  </WorkTypeDef>
+</Defs>
