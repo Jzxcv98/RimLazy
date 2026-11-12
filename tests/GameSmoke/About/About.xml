@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>RimLazy · Developer smoke probe</name>
+  <packageId>rimlazy.qaprobe</packageId>
+  <author>RimLazy</author>
+  <supportedVersions><li>1.7</li></supportedVersions>
+  <loadAfter><li>rimlazy.strategicwork</li></loadAfter>
+  <description>Developer-only checks for a disposable quick-test colony. Not part of the player package.</description>
+</ModMetaData>

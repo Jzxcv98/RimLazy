@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <MainButtonDef>
+    <defName>RimLazy_Planner</defName>
+    <label>planner</label>
+    <description>Plan work priorities for this colony and review what will change.</description>
+    <tabWindowClass>StrategicWork.RimWorld.ColonyWorkWindow</tabWindowClass>
+    <order>11</order>
+    <closesWorldView>true</closesWorldView>
+  </MainButtonDef>
+</Defs>

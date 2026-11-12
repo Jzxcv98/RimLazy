@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimLazy_SelectMap>请切换到要分配工作的殖民地地图。</RimLazy_SelectMap>
+  <RimLazy_Page_Strategy>战略</RimLazy_Page_Strategy>
+  <RimLazy_Page_Mapping>工作类型</RimLazy_Page_Mapping>
+  <RimLazy_Page_Locks>优先级锁定</RimLazy_Page_Locks>
+  <RimLazy_Page_Results>分配结果</RimLazy_Page_Results>
+  <RimLazy_EnableManual>请先在游戏的「工作」页勾选「手动设置优先级」，再应用方案。</RimLazy_EnableManual>
+  <RimLazy_OpenWork>打开工作表</RimLazy_OpenWork>
+  <RimLazy_Preview>预览分配</RimLazy_Preview>
+  <RimLazy_Apply>计算并应用</RimLazy_Apply>
+  <RimLazy_Undo>撤销上次应用</RimLazy_Undo>
+  <RimLazy_Previewed>已生成预览，预计修改 {0} 格优先级。</RimLazy_Previewed>
+  <RimLazy_Applied>已修改 {0} 格优先级。</RimLazy_Applied>
+  <RimLazy_Undone>已恢复到上次应用前的优先级。</RimLazy_Undone>
+  <RimLazy_AllocationHelp>先为各方向设置最低工时占比。剩余工时按权重比例分配，权重相等的方向平分。</RimLazy_AllocationHelp>
+  <RimLazy_Direction>战略方向</RimLazy_Direction>
+  <RimLazy_Minimum>最低工时占比</RimLazy_Minimum>
+  <RimLazy_Weight>剩余工时权重</RimLazy_Weight>
+  <RimLazy_Direction_survival>生存与日常维护</RimLazy_Direction_survival>
+  <RimLazy_Direction_expansion>建设与采掘</RimLazy_Direction_expansion>
+  <RimLazy_Direction_research>科研</RimLazy_Direction_research>
+  <RimLazy_Direction_industry>工业与经济</RimLazy_Direction_industry>
+  <RimLazy_Direction_defense>防务准备</RimLazy_Direction_defense>
+  <RimLazy_InvalidMinimum>最低投入合计 {0}%，请调整至 100% 以内才能分配。</RimLazy_InvalidMinimum>
+  <RimLazy_MinimumTotal>最低投入合计 {0}%</RimLazy_MinimumTotal>
+  <RimLazy_PreserveRemainder>所有剩余权重都为零时，空余劳力保留原有优先级</RimLazy_PreserveRemainder>
+  <RimLazy_ZeroKeep>当前所有权重为零，剩余 {0}% 工时没有战略目标，空余劳力会保留现有优先级。</RimLazy_ZeroKeep>
+  <RimLazy_ZeroLeave>当前所有权重为零，剩余 {0}% 工时将留空；应用后，受分配管理的工作可能被停用。</RimLazy_ZeroLeave>
+  <RimLazy_LoadPreset>载入预设…</RimLazy_LoadPreset>
+  <RimLazy_NamePreset>输入名称，在本地图保存当前战略。</RimLazy_NamePreset>
+  <RimLazy_SavePreset>保存或替换预设</RimLazy_SavePreset>
+  <RimLazy_Saved>已为本地图保存战略「{0}」。</RimLazy_Saved>
+  <RimLazy_DefaultPreset>均衡（默认）</RimLazy_DefaultPreset>
+  <RimLazy_NoCapture>暂未读取到工作类型。请点击预览重新读取。</RimLazy_NoCapture>
+  <RimLazy_Detected>当前可用优先级为 1 至 {0} 档。来源：{1}</RimLazy_Detected>
+  <RimLazy_OverrideHint>规划上限（0 为自动）。若模组的最高档尚未识别，先在游戏工作表中把任意一格设到该档，再预览。</RimLazy_OverrideHint>
+  <RimLazy_MappingHelp>将工作列分配到战略方向。选择「保留原值」后，该列保留各殖民者现有的优先级。</RimLazy_MappingHelp>
+  <RimLazy_KeepColumn>保留原值</RimLazy_KeepColumn>
+  <RimLazy_Automatic>自动 · {0}</RimLazy_Automatic>
+  <RimLazy_AutoMapping>使用自动映射</RimLazy_AutoMapping>
+  <RimLazy_NoWorkers>本地图暂无可分配工作的殖民者。</RimLazy_NoWorkers>
+  <RimLazy_LocksHelp>先选择殖民者，再勾选要锁定的工作。应用方案时会保留该殖民者在这些工作上的优先级。</RimLazy_LocksHelp>
+  <RimLazy_Ineligible>无法执行</RimLazy_Ineligible>
+  <RimLazy_PreviewFirst>点击「预览分配」，查看预计工时占比和将要修改的优先级。</RimLazy_PreviewFirst>
+  <RimLazy_ResultsHelp>预计工时依据当前可用任务估算，实际投入还取决于任务、材料和步行距离。</RimLazy_ResultsHelp>
+  <RimLazy_Estimate>{0}：目标 {1}，预计 {2}</RimLazy_Estimate>
+  <RimLazy_Reason_NoMappedWork>无对应工作列</RimLazy_Reason_NoMappedWork>
+  <RimLazy_Reason_NoEligiblePawn>无人具备执行资格</RimLazy_Reason_NoEligiblePawn>
+  <RimLazy_Reason_Capacity>可用工作量或工位受限</RimLazy_Reason_Capacity>
+  <RimLazy_Reason_PriorityOrder>受到工作顺序或其他分工限制</RimLazy_Reason_PriorityOrder>
+  <RimLazy_Remainder>未分配工时 {0}，保留原值的工作列预计占 {1}</RimLazy_Remainder>
+  <RimLazy_ChangedCells>优先级改动（{0} 格）</RimLazy_ChangedCells>
+  <RimLazy_Change>{0}  ·  {1}：{2} → {3}</RimLazy_Change>
+  <RimLazy_Off>停用</RimLazy_Off>
+</LanguageData>

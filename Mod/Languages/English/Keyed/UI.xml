@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimLazy_SelectMap>Select a colony map to manage its work.</RimLazy_SelectMap>
+  <RimLazy_Page_Strategy>Strategy</RimLazy_Page_Strategy>
+  <RimLazy_Page_Mapping>Work types</RimLazy_Page_Mapping>
+  <RimLazy_Page_Locks>Locked priorities</RimLazy_Page_Locks>
+  <RimLazy_Page_Results>Results</RimLazy_Page_Results>
+  <RimLazy_EnableManual>Enable manual priorities in the game's Work tab to apply a plan.</RimLazy_EnableManual>
+  <RimLazy_OpenWork>Open Work tab</RimLazy_OpenWork>
+  <RimLazy_Preview>Preview allocation</RimLazy_Preview>
+  <RimLazy_Apply>Calculate and apply</RimLazy_Apply>
+  <RimLazy_Undo>Undo last application</RimLazy_Undo>
+  <RimLazy_Previewed>Preview ready. {0} priorities would change.</RimLazy_Previewed>
+  <RimLazy_Applied>Applied {0} priority changes.</RimLazy_Applied>
+  <RimLazy_Undone>Restored the priorities from before the last application.</RimLazy_Undone>
+  <RimLazy_AllocationHelp>Set a minimum share of work time for each goal. The weights divide the remaining time. Equal weights receive equal shares.</RimLazy_AllocationHelp>
+  <RimLazy_Direction>Goal</RimLazy_Direction>
+  <RimLazy_Minimum>Minimum share</RimLazy_Minimum>
+  <RimLazy_Weight>Remaining weight</RimLazy_Weight>
+  <RimLazy_Direction_survival>Food and upkeep</RimLazy_Direction_survival>
+  <RimLazy_Direction_expansion>Construction and mining</RimLazy_Direction_expansion>
+  <RimLazy_Direction_research>Research</RimLazy_Direction_research>
+  <RimLazy_Direction_industry>Industry and trade</RimLazy_Direction_industry>
+  <RimLazy_Direction_defense>Defense preparation</RimLazy_Direction_defense>
+  <RimLazy_InvalidMinimum>Minimum shares total {0}%. Reduce them to 100% or less to continue.</RimLazy_InvalidMinimum>
+  <RimLazy_MinimumTotal>Total minimum share: {0}%</RimLazy_MinimumTotal>
+  <RimLazy_PreserveRemainder>Keep existing priorities for spare labor when all remaining weights are zero</RimLazy_PreserveRemainder>
+  <RimLazy_ZeroKeep>With all weights at zero, the remaining {0}% has no strategic target. Existing priorities are kept for spare labor.</RimLazy_ZeroKeep>
+  <RimLazy_ZeroLeave>With all weights at zero, the remaining {0}% is left unassigned. Applying can turn off managed work types.</RimLazy_ZeroLeave>
+  <RimLazy_LoadPreset>Load preset…</RimLazy_LoadPreset>
+  <RimLazy_NamePreset>Enter a name to save the current strategy in this map.</RimLazy_NamePreset>
+  <RimLazy_SavePreset>Save / replace preset</RimLazy_SavePreset>
+  <RimLazy_Saved>Saved strategy “{0}” for this map.</RimLazy_Saved>
+  <RimLazy_DefaultPreset>Balanced (default)</RimLazy_DefaultPreset>
+  <RimLazy_NoCapture>Could not read work types. Preview again to refresh.</RimLazy_NoCapture>
+  <RimLazy_Detected>Active priority range: 1–{0}. Source: {1}</RimLazy_Detected>
+  <RimLazy_OverrideHint>Planning limit (0 = auto). To detect an unknown mod's highest tier, set one cell to that tier in the Work tab and preview again.</RimLazy_OverrideHint>
+  <RimLazy_MappingHelp>Assign work types to goals. Columns set to “Keep existing” retain each colonist's current priority.</RimLazy_MappingHelp>
+  <RimLazy_KeepColumn>Keep existing</RimLazy_KeepColumn>
+  <RimLazy_Automatic>Auto · {0}</RimLazy_Automatic>
+  <RimLazy_AutoMapping>Use automatic mapping</RimLazy_AutoMapping>
+  <RimLazy_NoWorkers>No eligible colonists on this map.</RimLazy_NoWorkers>
+  <RimLazy_LocksHelp>Select a colonist above. Check a work type to keep that colonist’s current priority when applying a plan.</RimLazy_LocksHelp>
+  <RimLazy_Ineligible>Cannot perform</RimLazy_Ineligible>
+  <RimLazy_PreviewFirst>Preview an allocation to see estimated work shares and changed priorities.</RimLazy_PreviewFirst>
+  <RimLazy_ResultsHelp>Estimated shares assume available tasks. Actual hours depend on jobs, materials and travel.</RimLazy_ResultsHelp>
+  <RimLazy_Estimate>{0}: target {1} · estimate {2}</RimLazy_Estimate>
+  <RimLazy_Reason_NoMappedWork>No work types mapped</RimLazy_Reason_NoMappedWork>
+  <RimLazy_Reason_NoEligiblePawn>No eligible colonist</RimLazy_Reason_NoEligiblePawn>
+  <RimLazy_Reason_Capacity>Available work or capacity is limited</RimLazy_Reason_Capacity>
+  <RimLazy_Reason_PriorityOrder>Limited by available priorities or other assignments</RimLazy_Reason_PriorityOrder>
+  <RimLazy_Remainder>Unassigned: {0} · work types kept as-is: {1}</RimLazy_Remainder>
+  <RimLazy_ChangedCells>Changed priorities ({0})</RimLazy_ChangedCells>
+  <RimLazy_Change>{0}  ·  {1}:  {2} → {3}</RimLazy_Change>
+  <RimLazy_Off>Off</RimLazy_Off>
+</LanguageData>

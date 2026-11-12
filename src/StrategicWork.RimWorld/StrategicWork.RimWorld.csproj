@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Version>0.1.0</Version>
+    <RimWorldDir Condition="'$(RimWorldDir)' == ''">$(RIMWORLD_DIR)</RimWorldDir>
+  </PropertyGroup>
+  <Target Name="CheckGameInstall" BeforeTargets="ResolveAssemblyReferences" Condition="!Exists('$(RimWorldDir)/Assembly-CSharp.dll')">
+    <Error Text="Set RIMWORLD_DIR or -p:RimWorldDir to the root of a RimWorld 1.7 install." />
+  </Target>
+  <ItemGroup>
+    <ProjectReference Include="../StrategicWork.Core/StrategicWork.Core.csproj" />
+    <Reference Include="Assembly-CSharp;UnityStubs;Waylith;Waylith.UnityCompat;Brutal.Core.Numerics;Brutal.Core.Maths;RimWorld">
+      <HintPath>$(RimWorldDir)/%(Identity).dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

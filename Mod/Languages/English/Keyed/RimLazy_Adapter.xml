@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimLazy_StalePlan>The colony or its work table changed. Preview again.</RimLazy_StalePlan>
+  <RimLazy_UndoConflict>Undo could not start. A changed cell is now locked, unavailable, or edited since the last application.</RimLazy_UndoConflict>
+  <RimLazy_ManualRequired>Enable manual priorities in the Work tab first.</RimLazy_ManualRequired>
+  <RimLazy_DetailedWorkTable>Work Tab controls hourly and individual task priorities. RimLazy supports preview only with this work table.</RimLazy_DetailedWorkTable>
+  <RimLazy_WriteRefused>A work-table mod rejected the priority change.</RimLazy_WriteRefused>
+  <RimLazy_RollbackFailed>Another mod blocked both the change and its rollback. Check the Work tab before continuing.</RimLazy_RollbackFailed>
+  <RimLazy_InvalidRange>A work-table mod reported an invalid priority limit.</RimLazy_InvalidRange>
+  <RimLazy_RangeProvider>Reported by {0}</RimLazy_RangeProvider>
+  <RimLazy_RangeObserved>Highest priority number observed in the Work tab</RimLazy_RangeObserved>
+  <RimLazy_RangeDefault>Base game range</RimLazy_RangeDefault>
+  <RimLazy_RangeOverride>Player limit ({0})</RimLazy_RangeOverride>
+  <RimLazy_RangeUnverified>The verified maximum is {0}. For another work-table mod, first set one colonist to its highest number in the Work tab. Then preview again, or select 0 for automatic.</RimLazy_RangeUnverified>
+</LanguageData>

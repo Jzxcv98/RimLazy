@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>RimLazy.GameSmoke</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/StrategicWork.RimWorld/StrategicWork.RimWorld.csproj" />
+    <Reference Include="Assembly-CSharp;UnityStubs;Waylith;Waylith.UnityCompat;Brutal.Core.Numerics;Brutal.Core.Maths;RimWorld">
+      <HintPath>$(RimWorldDir)/%(Identity).dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

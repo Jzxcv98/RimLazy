@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimLazy_StalePlan>殖民地或工作表已发生变化，请重新预览。</RimLazy_StalePlan>
+  <RimLazy_UndoConflict>无法撤销。上次改动的格子已被锁定、修改，或当前不可用。</RimLazy_UndoConflict>
+  <RimLazy_ManualRequired>请先在“工作”页勾选手动优先级。</RimLazy_ManualRequired>
+  <RimLazy_DetailedWorkTable>Work Tab 管理逐小时和逐项工作的优先级。启用该工作表时，RimLazy 仅支持预览。</RimLazy_DetailedWorkTable>
+  <RimLazy_WriteRefused>工作表模组拒绝了优先级改动。</RimLazy_WriteRefused>
+  <RimLazy_RollbackFailed>其他模组阻止了写入和还原，请检查工作表。</RimLazy_RollbackFailed>
+  <RimLazy_InvalidRange>工作表模组返回的档位上限无效。</RimLazy_InvalidRange>
+  <RimLazy_RangeProvider>来自 {0} 的当前设置</RimLazy_RangeProvider>
+  <RimLazy_RangeObserved>工作表中实际观察到的最大档位</RimLazy_RangeObserved>
+  <RimLazy_RangeDefault>游戏原版档位</RimLazy_RangeDefault>
+  <RimLazy_RangeOverride>玩家限定（{0}）</RimLazy_RangeOverride>
+  <RimLazy_RangeUnverified>当前确认的最大档位是 {0}。若使用其他工作表模组，请先在“工作”页为一名殖民者选到该模组的最大档位，再重新预览，或输入 0 自动识别。</RimLazy_RangeUnverified>
+</LanguageData>

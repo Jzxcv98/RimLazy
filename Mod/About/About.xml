@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>RimLazy · Colony Work Planner</name>
+  <author>RimLazy</author>
+  <packageId>rimlazy.strategicwork</packageId>
+  <supportedVersions><li>1.7</li></supportedVersions>
+  <modVersion>0.1.0</modVersion>
+  <description>按殖民地战略分配工作：预览并应用工作优先级，保留锁定的格子，可撤销。支持动态工作列。打开底栏「分工」开始。
+
+Plan colony work priorities from your goals. Open the Planner tab to preview changes, apply them or undo. Runs locally, on demand.
+
+[AI 辅助生成]</description>
+</ModMetaData>
