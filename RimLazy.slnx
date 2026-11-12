@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/StrategicWork.Core/StrategicWork.Core.csproj" />
+  <Project Path="tests/StrategicWork.Core.Tests/StrategicWork.Core.Tests.csproj" />
+</Solution>

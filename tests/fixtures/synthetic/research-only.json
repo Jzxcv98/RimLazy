@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "presetId": "research-only",
+  "strategies": [
+    { "id": "survival", "minimumShare": 0, "relativeWeight": 0 },
+    { "id": "research", "minimumShare": 0, "relativeWeight": 100 }
+  ],
+  "unweightedRemainder": "leaveUnassigned"
+}

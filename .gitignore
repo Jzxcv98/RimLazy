@@ -1,0 +1,14 @@
+# Local SDKs, developer tools, package downloads and private game snapshots
+/.tools/
+/.local/
+/.artifacts/
+/.vs/
+/.idea/
+**/bin/
+**/obj/
+**/TestResults/
+*.user
+*.suo
+*.rws
+*.nupkg
+Player.log
