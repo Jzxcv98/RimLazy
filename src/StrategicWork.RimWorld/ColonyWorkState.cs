@@ -31,6 +31,12 @@ public sealed class ColonyWorkState : MapComponent
         Preset = Preset with { Strategies = Preset.Strategies.Select(s => s.Id == edited.Id ? edited : s).ToArray() };
     }
 
+    public void SetTrainingLossPercent(int percent)
+    {
+        if (percent < 0 || percent > 100) throw new ArgumentOutOfRangeException(nameof(percent));
+        Preset = Preset with { TrainingLossLimit = percent / 100m };
+    }
+
     // Scribe owns the save lifecycle. The payload only contains IDs and values, no runtime game objects.
     public override void ExposeData()
     {

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimLazy_GearFromStorage>storage</RimLazy_GearFromStorage>
+  <RimLazy_GearSuggestion>{0} could use {1} from {2} for {3}.</RimLazy_GearSuggestion>
+</LanguageData>

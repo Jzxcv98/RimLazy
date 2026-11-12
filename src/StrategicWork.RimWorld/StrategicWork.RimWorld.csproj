@@ -3,7 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>0.2.0</Version>
+    <Version>0.3.0</Version>
     <RimWorldDir Condition="'$(RimWorldDir)' == ''">$(RIMWORLD_DIR)</RimWorldDir>
     <HarmonyDir Condition="'$(HarmonyDir)' == ''">$(HARMONY_DIR)</HarmonyDir>
     <HarmonyDir Condition="'$(HarmonyDir)' == ''">$(RimWorldDir)/../../workshop/content/294100/2009463077</HarmonyDir>
@@ -15,6 +15,7 @@
     <Error Text="Set HARMONY_DIR or -p:HarmonyDir to the Harmony mod directory containing 1.7/Assemblies/0Harmony.dll." />
   </Target>
   <ItemGroup>
+    <InternalsVisibleTo Include="RimLazy.GameSmoke" />
     <ProjectReference Include="../StrategicWork.Core/StrategicWork.Core.csproj" />
     <Reference Include="0Harmony">
       <HintPath>$(HarmonyDir)/1.7/Assemblies/0Harmony.dll</HintPath>

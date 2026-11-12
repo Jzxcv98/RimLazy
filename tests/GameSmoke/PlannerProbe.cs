@@ -10,6 +10,8 @@ namespace RimLazy.GameSmoke;
 public sealed class PlannerProbe(Map map) : MapComponent(map)
 {
     internal const string LegacyId = "frozensnowfox.complexjobs";
+    private const string TrainingPresetName = "QA training 23";
+    private const decimal TrainingLimit = 0.23m;
     private static readonly string? Scenario = Environment.GetEnvironmentVariable("RIMLAZY_GAME_SMOKE");
     private static readonly List<string> Checks = [];
     private static Dictionary<string, int>? original;
@@ -79,6 +81,11 @@ public sealed class PlannerProbe(Map map) : MapComponent(map)
 
     private void VerifyMigration(ColonyWorkState state)
     {
+        // A layout-change input can be a v0.2 save or a new v0.3 save generated in this run.
+        bool savedTraining = Scenario == "change-layout" &&
+            File.ReadAllText(GenFilePaths.FilePathForSavedGame("RimLazy-migration-input")).Contains(TrainingPresetName, StringComparison.Ordinal);
+        if (savedTraining) VerifyTrainingPreset(state);
+        else Check(state.Preset.TrainingLossLimit == 0, "Legacy map defaults to zero training loss");
         // The archived v0.1 save recorded both priorities and stable pawn/work IDs in its undo journal.
         // Check the game's actual decoded grid before the planner or the UI can modify it.
         var legacy = state.LastUndo ?? throw new InvalidOperationException("Expected v0.1 undo journal in legacy QA save");
@@ -117,22 +124,32 @@ public sealed class PlannerProbe(Map map) : MapComponent(map)
         var tab = DefDatabase<MainButtonDef>.GetNamed("RimLazy_Planner");
         Find.MainTabsRoot.SetCurrentTab(tab, false);
         Check(Find.MainTabsRoot.OpenTab == tab && tab.TabWindow is ColonyWorkWindow, "Opened the Planner tab after the Work tab");
+        var window = (ColonyWorkWindow)tab.TabWindow;
+        if (Scenario is not ("change-layout" or "migration"))
+            Check(state.Preset.TrainingLossLimit == 0, "New map starts with zero training loss");
+        state.SetTrainingLossPercent(23);
+        state.SavedPresets[TrainingPresetName] = state.Preset;
         lockKey = ColonyAdapter.CellKey(snapshot.Pawns[0].Id, "Hauling");
         state.LockedCells.Add(lockKey);
         state.Overrides["Hauling"] = "industry";
-        snapshot = Capture(state);
+        snapshot = ColonyAdapter.Capture(map, state.Overrides, state.LockedCells, state.PriorityOverride, rush: true);
         original = Table(snapshot);
-        var plan = WorkPlanner.Plan(snapshot.Inputs, snapshot.Columns, state.Preset, snapshot.MaxPriority);
+        window.PreviewAllocation(false);
+        Check(!window.PreviewIsRush, "Routine preview selected through the Planner tab");
+        var plan = window.PreviewAllocation(true);
+        Check(window.PreviewIsRush && !plan.TrainingApplied && plan.Cells.All(c => c.After == c.ReferencePriority),
+            "Rush preview uses the current-performance reference at every cell");
+        VerifyTrainingPreset(state);
         var next = Table(Capture(state));
         Check(original.All(k => next[k.Key] == k.Value), "Preview leaves every cell untouched");
         Check(WorkSplitChecks.SplitIds.All(id => plan.Cells.Any(c => c.WorkId == id)), "Planner emits individual priorities for all 21 core split columns");
         if (Scenario == "legacy-settings")
             Check(WorkSplitChecks.ImportedIds.All(id => plan.Cells.Any(c => c.WorkId == id)),
                 "Planner evaluates hacking, rescue and mechanoid work from the imported settings");
-        var undo = ColonyAdapter.Apply(snapshot, plan);
+        var undo = window.ApplyPreview();
         edits = undo.Edits.Count;
-        Check(edits > 0, "Applied real changes through the game work-settings API");
-        state.LastUndo = undo;
+        Check(edits > 0 && ReferenceEquals(state.LastUndo, undo), "The Planner applied the rush preview and recorded its undo journal");
+        VerifyTrainingPreset(state);
         var actual = Table(Capture(state));
         Check(actual[lockKey] == original[lockKey] && plan.Cells.All(c => actual[ColonyAdapter.CellKey(c.PawnId, c.WorkId)] == c.After),
             "Read-back equals plan and lock is preserved");
@@ -141,6 +158,10 @@ public sealed class PlannerProbe(Map map) : MapComponent(map)
         bool refused = false;
         try { ColonyAdapter.Apply(snapshot, plan); } catch (InvalidOperationException) { refused = true; }
         Check(refused, "Stale preview rejected");
+        window.PreviewAllocation(false);
+        Check(!window.PreviewIsRush && ReferenceEquals(state.LastUndo, undo),
+            "Next routine preview clears rush mode and preserves previous application history");
+        VerifyTrainingPreset(state);
         GameDataSaveLoader.SaveGame("RimLazy-quicktest");
         Check(File.Exists(GenFilePaths.FilePathForSavedGame("RimLazy-quicktest")), "Saved the test colony");
         oldMap = map;
@@ -149,6 +170,7 @@ public sealed class PlannerProbe(Map map) : MapComponent(map)
 
     private void VerifyReload(ColonyWorkState state)
     {
+        VerifyTrainingPreset(state);
         var restored = state.LastUndo;
         Check(restored is { Edits.Count: > 0 } && restored.Edits.Count == edits, "Undo journal survives reload");
         Check(state.LockedCells.Contains(lockKey!) && state.Overrides.ContainsKey("Hauling"), "Lock and mapping survive reload");
@@ -159,7 +181,48 @@ public sealed class PlannerProbe(Map map) : MapComponent(map)
         var reverted = Table(Capture(state));
         Check(original!.Count == reverted.Count && original.All(k => reverted[k.Key] == k.Value),
             "Undo restores every original grid cell");
+        if (Scenario == "native")
+        {
+            VerifyRushFocus(state);
+            WorkPolicyChecks.Verify(map);
+            RealOrderChecks.Verify(map);
+        }
         Finish(null);
+    }
+
+    private static void VerifyTrainingPreset(ColonyWorkState state) =>
+        Check(state.Preset.TrainingLossLimit == TrainingLimit &&
+            state.SavedPresets.TryGetValue(TrainingPresetName, out var saved) && saved.TrainingLossLimit == TrainingLimit,
+            "Map policy and named routine preset retain 23% training loss");
+
+    private void VerifyRushFocus(ColonyWorkState state)
+    {
+        var tab = DefDatabase<MainButtonDef>.GetNamed("RimLazy_Planner");
+        Find.MainTabsRoot.SetCurrentTab(tab, false);
+        var window = (ColonyWorkWindow)tab.TabWindow;
+        string preset = JsonSerializer.Serialize(state.Preset);
+        string namedPresets = JsonSerializer.Serialize(state.SavedPresets);
+        var capture = ColonyAdapter.Capture(map, state.Overrides, state.LockedCells, state.PriorityOverride, rush: true);
+        const string focus = "industry";
+        var schedule = state.Preset.Strategies;
+        double remaining = (double)(1m - schedule.Sum(g => g.MinimumShare));
+        double available = capture.Inputs.Sum(p => p.Labor);
+        window.SetRushFocus(focus);
+        var focused = window.PreviewAllocation(true);
+        Check(focused.Strategies.All(g => Math.Abs(g.TargetLabor -
+            available * ((double)schedule.Single(s => s.Id == g.Id).MinimumShare + (g.Id == focus ? remaining : 0))) < 1e-6),
+            "A focused rush keeps all minimum shares and sends only the remainder to industry");
+        window.SetRushFocus(null);
+        bool refused = false;
+        try { window.ApplyPreview(); } catch (InvalidOperationException) { refused = true; }
+        Check(refused, "Cancelling the rush focus invalidates its old preview");
+        window.SetRushFocus(focus);
+        window.PreviewAllocation(true);
+        var undo = window.ApplyPreview();
+        Check(window.RushFocus == null && JsonSerializer.Serialize(state.Preset) == preset &&
+            JsonSerializer.Serialize(state.SavedPresets) == namedPresets,
+            "Applied one-time focus clears and leaves both the current and named routine presets unchanged");
+        if (undo.Edits.Count > 0) ColonyAdapter.Undo(map, undo, state.LockedCells);
     }
 
     private static void Finish(string? error)

@@ -7,16 +7,28 @@
   <RimLazy_Page_Results>分配结果</RimLazy_Page_Results>
   <RimLazy_EnableManual>请先在游戏的「工作」页勾选「手动设置优先级」，再应用方案。</RimLazy_EnableManual>
   <RimLazy_OpenWork>打开工作表</RimLazy_OpenWork>
-  <RimLazy_Preview>预览分配</RimLazy_Preview>
-  <RimLazy_Apply>计算并应用</RimLazy_Apply>
+  <RimLazy_Preview>常态预览</RimLazy_Preview>
+  <RimLazy_RushPreview>本次赶工</RimLazy_RushPreview>
+  <RimLazy_RushHint>按当前配装和工作条件预览接下来一个游戏小时。本次培养为 0%。</RimLazy_RushHint>
+  <RimLazy_RushFocus>本次赶工方向 · {0}</RimLazy_RushFocus>
+  <RimLazy_RushInherit>沿用战略权重</RimLazy_RushInherit>
+  <RimLazy_RushFocusHint>各方向的最低份额照常保留。本次赶工的剩余劳力可以集中到一个方向，应用后恢复沿用战略权重。</RimLazy_RushFocusHint>
+  <RimLazy_RushFocusSummary>本次剩余投入 → {0}</RimLazy_RushFocusSummary>
+  <RimLazy_Apply>计算并应用常态方案</RimLazy_Apply>
+  <RimLazy_ApplyPreview>应用预览方案</RimLazy_ApplyPreview>
+  <RimLazy_ApplyRush>应用赶工方案</RimLazy_ApplyRush>
   <RimLazy_Undo>撤销上次应用</RimLazy_Undo>
   <RimLazy_Previewed>已生成预览，预计修改 {0} 格优先级。</RimLazy_Previewed>
+  <RimLazy_RushPreviewed>已生成本次赶工预览，预计修改 {0} 格优先级。</RimLazy_RushPreviewed>
+  <RimLazy_RushApplied>已应用本次赶工方案，修改 {0} 格优先级。常态预设保持原设置。</RimLazy_RushApplied>
   <RimLazy_Applied>已修改 {0} 格优先级。</RimLazy_Applied>
   <RimLazy_Undone>已恢复到上次应用前的优先级。</RimLazy_Undone>
   <RimLazy_AllocationHelp>先为各方向设置最低工时占比。剩余工时按权重比例分配，权重相等的方向平分。</RimLazy_AllocationHelp>
   <RimLazy_Direction>战略方向</RimLazy_Direction>
   <RimLazy_Minimum>最低工时占比</RimLazy_Minimum>
   <RimLazy_Weight>剩余工时权重</RimLazy_Weight>
+  <RimLazy_TrainingLimit>培养潜力</RimLazy_TrainingLimit>
+  <RimLazy_TrainingHint>为培养人手，每个方向最多可接受的本期预计表现降幅。设为 0% 时只按当前表现选人。</RimLazy_TrainingHint>
   <RimLazy_Direction_survival>生存与日常维护</RimLazy_Direction_survival>
   <RimLazy_Direction_expansion>建设与采掘</RimLazy_Direction_expansion>
   <RimLazy_Direction_research>科研</RimLazy_Direction_research>
@@ -42,8 +54,24 @@
   <RimLazy_NoWorkers>本地图暂无可分配工作的殖民者。</RimLazy_NoWorkers>
   <RimLazy_LocksHelp>先选择殖民者，再勾选要锁定的工作。应用方案时会保留该殖民者在这些工作上的优先级。</RimLazy_LocksHelp>
   <RimLazy_Ineligible>无法执行</RimLazy_Ineligible>
-  <RimLazy_PreviewFirst>点击「预览分配」，查看预计工时占比和将要修改的优先级。</RimLazy_PreviewFirst>
-  <RimLazy_ResultsHelp>预计工时依据当前可用任务估算，实际投入还取决于任务、材料和步行距离。</RimLazy_ResultsHelp>
+  <RimLazy_PreviewFirst>点击「常态预览」或「本次赶工」，查看预计表现及优先级变更。</RimLazy_PreviewFirst>
+  <RimLazy_RoutineMode>常态分工 · 接下来一个游戏日 · 培养代价上限 {0}</RimLazy_RoutineMode>
+  <RimLazy_RushMode>本次赶工 · 接下来一个游戏小时 · 按当前配装 · 培养 0%</RimLazy_RushMode>
+  <RimLazy_TrainingChosen>已在允许的代价范围内为培养人手调整分工。</RimLazy_TrainingChosen>
+  <RimLazy_TrainingKept>本次沿用只看当期表现的分工。</RimLazy_TrainingKept>
+  <RimLazy_ResultsHelp>预计值受可用任务、原料和路程影响。悬停在改动的格子上可查看依据。</RimLazy_ResultsHelp>
+  <RimLazy_OutputComparison>预计当期表现指数 · 参考 {0} → 本案 {1}</RimLazy_OutputComparison>
+  <RimLazy_OutputLoss>预计降低 {0}</RimLazy_OutputLoss>
+  <RimLazy_OutputUnknown>这个方向的任务数据不足以可靠比较当期表现。</RimLazy_OutputUnknown>
+  <RimLazy_TrainingComparison>预计培养值 · 参考 {0} → 本案 {1}</RimLazy_TrainingComparison>
+  <RimLazy_EquipmentHeading>可调拨的装备建议</RimLazy_EquipmentHeading>
+  <RimLazy_ChangeCounts>优先级改动 {0} 格 · 培养取舍影响 {1} 格</RimLazy_ChangeCounts>
+  <RimLazy_ReferencePriority>只看当期表现时为 {0}</RimLazy_ReferencePriority>
+  <RimLazy_CellPerformance>预计工作速率 {0}，按当前配装估计为 {1}。</RimLazy_CellPerformance>
+  <RimLazy_CellPoison>预计烹饪成品污染概率 {0}。</RimLazy_CellPoison>
+  <RimLazy_CellTravel>预计路途占用时间 {0}。</RimLazy_CellTravel>
+  <RimLazy_CellTraining>每份劳力的预计培养值 {0}。</RimLazy_CellTraining>
+  <RimLazy_CellApproximate>部分任务或工位信息按估算处理。</RimLazy_CellApproximate>
   <RimLazy_Estimate>{0}：目标 {1}，预计 {2}</RimLazy_Estimate>
   <RimLazy_Reason_NoMappedWork>无对应工作列</RimLazy_Reason_NoMappedWork>
   <RimLazy_Reason_NoEligiblePawn>无人具备执行资格</RimLazy_Reason_NoEligiblePawn>

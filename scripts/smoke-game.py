@@ -21,6 +21,7 @@ def main():
     mode.add_argument("--all-splits", action="store_true", help="Enable every optional native work column in the isolated settings")
     mode.add_argument("--legacy-settings", type=Path, help="Verify the player's matching Complex Jobs XML Extensions settings are imported")
     parser.add_argument("--compare-catalog", type=Path, help="Compare all work-giver assignments with another run's WorkCatalog.json")
+    parser.add_argument("--player-package", type=Path, help="Test this exact packaged or installed RimLazy directory")
     args = parser.parse_args()
     repo = Path(__file__).resolve().parents[1]
     game = args.game.resolve()
@@ -108,13 +109,19 @@ def main():
             shutil.copytree(game / name, shadow / name)
     mods = shadow / "Mods"
     player_mod = mods / "RimLazy"
-    shutil.copytree(repo / "Mod", player_mod)
+    if args.player_package:
+        if ElementTree.parse(args.player_package / "About/About.xml").findtext("packageId") != "rimlazy.strategicwork":
+            parser.error("--player-package is not RimLazy")
+        shutil.copytree(args.player_package, player_mod)
+    else:
+        shutil.copytree(repo / "Mod", player_mod)
+        (player_mod / "Assemblies").mkdir()
+        for dll in ("StrategicWork.Core.dll", "StrategicWork.RimWorld.dll"):
+            shutil.copy2(repo / "src/StrategicWork.RimWorld/bin/Release/net10.0" / dll, player_mod / "Assemblies")
     probe = mods / "RimLazy.GameSmoke"
     shutil.copytree(repo / "tests/GameSmoke/About", probe / "About")
-    for target in (player_mod, probe):
-        (target / "Assemblies").mkdir()
-    for dll in ("StrategicWork.Core.dll", "StrategicWork.RimWorld.dll"):
-        shutil.copy2(repo / "src/StrategicWork.RimWorld/bin/Release/net10.0" / dll, player_mod / "Assemblies")
+    shutil.copytree(repo / "tests/GameSmoke/Defs", probe / "Defs")
+    (probe / "Assemblies").mkdir()
     hashes = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in (player_mod / "Assemblies").glob("*.dll")}
     shutil.copy2(repo / "tests/GameSmoke/bin/Release/net10.0/RimLazy.GameSmoke.dll", probe / "Assemblies")
     shutil.copytree(harmony, mods / "Harmony")

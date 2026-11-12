@@ -4,7 +4,7 @@
   <author>RimLazy</author>
   <packageId>rimlazy.strategicwork</packageId>
   <supportedVersions><li>1.7</li></supportedVersions>
-  <modVersion>0.2.0</modVersion>
+  <modVersion>0.3.0</modVersion>
   <modDependencies>
     <li>
       <packageId>brrainz.harmony</packageId>
@@ -13,9 +13,9 @@
     </li>
   </modDependencies>
   <loadAfter><li>brrainz.harmony</li></loadAfter>
-  <description>殖民地自动分工。内置细分岗位和可调的工作优先级，默认六档。在「工作」页可手动调整，打开「分工」可按人员能力、工作条件和殖民地战略预览、应用或撤销整张工作表。
+  <description>殖民地自动分工。内置细分岗位和可调的工作优先级，默认六档。在「分工」中设置战略与培养代价，预览、应用或撤销整张工作表。赶工按当前状态选人，单次覆盖保留日常预设。
 
-Split colony jobs into specialties and set up to 99 work priority levels. Open the Planner tab to assign workers by aptitude and colony goals, preview changes, apply them or undo.
+Plan specialized jobs with up to 99 priority levels. Choose colony goals and the current performance you can trade for training. Rush a shift using current working conditions. Preview, apply or undo in the Planner tab.
 
 [AI 辅助生成]</description>
 </ModMetaData>

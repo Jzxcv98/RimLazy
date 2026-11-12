@@ -22,5 +22,6 @@ public class StrategyPresetContractTests
         Assert.AreEqual(new StrategyAllocation("survival", 0, 0), preset.Strategies.Single(x => x.Id == "survival"));
         Assert.AreEqual(new StrategyAllocation("research", 0, 100), preset.Strategies.Single(x => x.Id == "research"));
         Assert.AreEqual(UnweightedRemainder.LeaveUnassigned, preset.UnweightedRemainder);
+        Assert.AreEqual(0m, preset.TrainingLossLimit, "A v0.2 preset must favor current performance when upgraded.");
     }
 }

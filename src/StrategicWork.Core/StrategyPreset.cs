@@ -5,7 +5,8 @@ public sealed record StrategyPreset(
     int SchemaVersion,
     string PresetId,
     IReadOnlyList<StrategyAllocation> Strategies,
-    UnweightedRemainder UnweightedRemainder);
+    UnweightedRemainder UnweightedRemainder,
+    decimal TrainingLossLimit = 0m);
 
 public sealed record StrategyAllocation(string Id, decimal MinimumShare, decimal RelativeWeight);
 

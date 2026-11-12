@@ -1,13 +1,15 @@
 namespace StrategicWork.Core;
 
-public static class WorkPlanner
+public static partial class WorkPlanner
 {
     internal const double Epsilon = 1e-8;
 
     public static WorkPlan Plan(IReadOnlyList<PawnInput> pawns, IReadOnlyList<WorkColumn> columns,
-        StrategyPreset preset, int maxPriority)
+        StrategyPreset preset, int maxPriority, bool rush = false)
     {
         if (maxPriority < 1) throw new ArgumentException("At least one enabled priority is required.");
+        if (preset.TrainingLossLimit is < 0m or > 1m)
+            throw new ArgumentOutOfRangeException(nameof(preset), "Training loss limit must be between zero and one.");
         var people = pawns.OrderBy(x => x.Id, StringComparer.Ordinal).ToArray();
         var works = columns.OrderBy(x => x.Id, StringComparer.Ordinal).ToArray();
         var strategies = preset.Strategies.OrderBy(x => x.Id, StringComparer.Ordinal).ToArray();
@@ -28,27 +30,36 @@ public static class WorkPlanner
             {
                 if (!p.Cells.TryGetValue(works[w].Id, out var cell)) continue;
                 if (!double.IsFinite(cell.Suitability)) throw new ArgumentException("Suitability must be finite.");
+                if (!double.IsFinite(cell.TrainingGain) || cell.TrainingGain < 0)
+                    throw new ArgumentException("Training potential must be finite and nonnegative.");
                 cells[i, w] = cell;
                 if (CanWork(cell)) potential[w] += p.Labor;
             }
         }
         // An unmapped, preserved column (e.g. firefighting) has no assumed routine workload.
-        var limits = works.Select((w, i) => Math.Min(potential[i], w.Capacity ?? (groups[i] >= 0 ? total : 0))).ToArray();
+        var limits = works.Select((w, i) => w.OutputDemand == 0 ? 0 :
+            Math.Min(potential[i], w.Capacity ?? (groups[i] >= 0 ? total : 0))).ToArray();
         var model = new Model(people, works, cells, groups, limits, targets, minimums, maxPriority);
-        var allocation = model.Allocate();
         bool preserveRemainder = weight == 0 && remainder > Epsilon &&
             preset.UnweightedRemainder == UnweightedRemainder.PreserveExisting;
-        var priorities = model.Rank(allocation, preserveRemainder);
-        var estimate = model.Estimate(priorities);
-        model.ImproveRounding(allocation, priorities, ref estimate);
+        var reference = model.SolveTable(preserveRemainder, 0);
+        var comparison = new TrainingComparison(people, works, cells, groups, targets, reference,
+            rush ? 0 : (double)preset.TrainingLossLimit);
+        var chosen = comparison.Select(model, preserveRemainder);
+        var priorities = chosen.Priorities;
+        var estimate = chosen.Forecast;
         var output = new List<PlannedCell>();
         for (int i = 0; i < people.Length; i++)
         for (int w = 0; w < works.Length; w++)
             if (cells[i, w] is { } cell)
-                output.Add(new(people[i].Id, works[w].Id, cell.Current, priorities[i, w], estimate.Hours[i, w]));
+                output.Add(new(people[i].Id, works[w].Id, cell.Current, priorities[i, w], estimate.Hours[i, w],
+                    reference.Priorities[i, w], reference.Forecast.Hours[i, w]));
         var reports = strategies.Select((s, g) => new StrategyEstimate(s.Id, targets[g], estimate.Shares[g],
-            model.Explain(g, potential, estimate.Shares[g]))).ToArray();
-        return new(output, reports, Math.Max(0, total - estimate.Shares.Sum() - estimate.Unmapped), estimate.Unmapped);
+            model.Explain(g, potential, estimate.Shares[g]), comparison.Comparable[g] ? 100 : 0,
+            comparison.Comparable[g] ? comparison.BestMetrics.Performance[g] : 0, comparison.ReferenceMetrics.Training[g],
+            comparison.BestMetrics.Training[g], comparison.Comparable[g])).ToArray();
+        return new(output, reports, Math.Max(0, total - estimate.Shares.Sum() - estimate.Unmapped), estimate.Unmapped,
+            chosen != reference);
     }
 
     private static void Validate(PawnInput[] people, WorkColumn[] works, StrategyAllocation[] strategies)
@@ -62,7 +73,8 @@ public static class WorkPlanner
             InvalidIds(strategies.Select(x => x.Id)))
             throw new ArgumentException("Pawn, work and strategy identifiers must be unique within each list.");
         if (people.Any(x => !double.IsFinite(x.Labor) || x.Labor < 0) || !double.IsFinite(people.Sum(x => x.Labor)) ||
-            works.Any(x => x.Capacity is double cap && (!double.IsFinite(cap) || cap < 0)))
+            works.Any(x => x.Capacity is double cap && (!double.IsFinite(cap) || cap < 0) ||
+                           x.OutputDemand is double demand && (!double.IsFinite(demand) || demand < 0)))
             throw new ArgumentException("Labor and capacity must be finite and nonnegative.");
         if (strategies.Any(x => x.MinimumShare < 0 || x.MinimumShare > 1 || x.RelativeWeight < 0) ||
             strategies.Sum(x => x.MinimumShare) > 1)
@@ -72,32 +84,77 @@ public static class WorkPlanner
     private static bool CanWork(WorkCell? c) => c is { Eligible: true, Current: >= 0 } && (!c.Locked || c.Current > 0);
 
     private sealed record Forecast(double[,] Hours, double[] Shares, double Unmapped);
+    private sealed record Table(int[,] Priorities, Forecast Forecast);
 
     private sealed class Model(PawnInput[] people, WorkColumn[] works, WorkCell?[,] cells, int[] groups,
         double[] limits, double[] targets, double[] minimums, int maxPriority)
     {
+        private readonly SharedStations stations = new(works);
+        private double[]? allocationLimits;
+
+        private double[] InitialLimits()
+        {
+            if (!stations.Shared) return limits;
+            var requested = new double[works.Length];
+            for (int w = 0; w < works.Length; w++)
+            {
+                if (groups[w] < 0) continue;
+                requested[w] = Math.Min(targets[groups[w]], limits[w]);
+                if (works[w].OutputDemand is not double amount || amount <= 0) continue;
+                double slowest = double.PositiveInfinity;
+                for (int p = 0; p < people.Length; p++)
+                    if (CanWork(cells[p, w]) && cells[p, w]!.Suitability > 0)
+                        slowest = Math.Min(slowest, cells[p, w]!.Suitability);
+                if (double.IsFinite(slowest)) requested[w] = Math.Min(requested[w], amount / slowest);
+            }
+            var granted = new double[works.Length];
+            stations.Grant(requested, stations.Open(), granted);
+            return granted;
+        }
+
         private bool Writable(int p, int w) => people[p].Labor > Epsilon && groups[w] >= 0 &&
             cells[p, w] is { Eligible: true, Locked: false, Current: >= 0 } c && c.Current <= maxPriority;
 
-        public double[,] Allocate()
+        public bool CanAdjustForTraining(int p, int w) => Writable(p, w) && limits[w] > Epsilon &&
+            cells[p, w]!.PerformanceComparable;
+
+        public Table SolveTable(bool preserveRemainder, double trainingWeight)
         {
+            var allocation = Allocate(trainingWeight);
+            var priorities = Rank(allocation, preserveRemainder);
+            var forecast = Estimate(priorities);
+            ImproveRounding(allocation, priorities, ref forecast);
+            return new(priorities, forecast);
+        }
+
+        private double[,] Allocate(double trainingWeight)
+        {
+            var caps = allocationLimits ??= InitialLimits();
             int workStart = people.Length, groupStart = workStart + works.Length;
             int source = groupStart + targets.Length, sink = source + 1;
             var flow = new LaborFlow(sink + 1);
             var assignments = new List<(int Pawn, int Work, LaborFlow.Edge Edge)>();
             var scores = new List<double>();
+            double maxTraining = Epsilon;
             for (int p = 0; p < people.Length; p++)
             for (int w = 0; w < works.Length; w++)
-                if (groups[w] >= 0 && CanWork(cells[p, w])) scores.Add(cells[p, w]!.Suitability);
+                if (groups[w] >= 0 && CanWork(cells[p, w]))
+                {
+                    var cell = cells[p, w]!;
+                    scores.Add(cell.Suitability);
+                    maxTraining = Math.Max(maxTraining, cell.TrainingGain);
+                }
             double scale = scores.Count == 0 ? 1 : Math.Max(1, Math.Max(Math.Abs(scores.Min()), Math.Abs(scores.Max())));
             for (int p = 0; p < people.Length; p++)
             {
                 flow.Add(source, p, people[p].Labor, 0);
                 for (int w = 0; w < works.Length; w++)
                 {
-                    if (groups[w] < 0 || targets[groups[w]] <= Epsilon || limits[w] <= Epsilon || !CanWork(cells[p, w])) continue;
+                    if (groups[w] < 0 || targets[groups[w]] <= Epsilon || caps[w] <= Epsilon || !CanWork(cells[p, w])) continue;
                     var cell = cells[p, w]!;
-                    int cost = (int)Math.Round(1000 * (1 - cell.Suitability / scale)) + (cell.Current == 0 ? 1 : 0);
+                    double value = (1 - trainingWeight) * (cell.Suitability / scale) +
+                                   trainingWeight * (cell.TrainingGain / maxTraining);
+                    int cost = (int)Math.Round(1000 * (1 - value)) + (cell.Current == 0 ? 1 : 0);
                     assignments.Add((p, w, flow.Add(p, workStart + w, people[p].Labor, cost)));
                 }
             }
@@ -105,19 +162,19 @@ public static class WorkPlanner
             {
                 // Splitting hauling into delivery, loading and transport does not create extra labor demand.
                 // Give each family coverage first, then allocate that coverage among its actual columns.
-                var families = Enumerable.Range(0, works.Length).Where(w => groups[w] == g && limits[w] > Epsilon)
+                var families = Enumerable.Range(0, works.Length).Where(w => groups[w] == g && caps[w] > Epsilon)
                     .GroupBy(w => works[w].WorkFamily ?? works[w].Id, StringComparer.Ordinal)
                     .Select(family => family.ToArray()).ToArray();
-                var familyShares = CappedShares(families.Select(f => f.Sum(w => limits[w])).ToArray(), targets[g]);
+                var familyShares = CappedShares(families.Select(f => f.Sum(w => caps[w])).ToArray(), targets[g]);
                 for (int f = 0; f < families.Length; f++)
                 {
                     var family = families[f];
-                    var shares = CappedShares(family.Select(w => limits[w]).ToArray(), familyShares[f]);
+                    var shares = CappedShares(family.Select(w => caps[w]).ToArray(), familyShares[f]);
                     for (int j = 0; j < family.Length; j++)
                     {
                         int w = family[j];
                         flow.Add(workStart + w, groupStart + g, shares[j], 0);
-                        flow.Add(workStart + w, groupStart + g, limits[w] - shares[j], 10_000);
+                        flow.Add(workStart + w, groupStart + g, caps[w] - shares[j], 10_000);
                     }
                 }
                 flow.Add(groupStart + g, sink, minimums[g], 0);
@@ -197,7 +254,7 @@ public static class WorkPlanner
                 spare[p] -= allocation[p, w];
             for (int w = 0; w < works.Length; w++)
             {
-                if (works[w].Capacity != 0 || groups[w] < 0 || targets[groups[w]] <= Epsilon) continue;
+                if ((works[w].Capacity != 0 && works[w].OutputDemand != 0) || groups[w] < 0 || targets[groups[w]] <= Epsilon) continue;
                 var available = Enumerable.Range(0, people.Length)
                     .Where(p => people[p].Labor > Epsilon && CanWork(cells[p, w])).ToArray();
                 if (available.Any(p => priorities[p, w] > 0)) continue;
@@ -215,6 +272,7 @@ public static class WorkPlanner
             var hours = new double[people.Length, works.Length];
             var shares = new double[targets.Length];
             var stock = (double[])limits.Clone();
+            var outputLeft = works.Select(w => w.OutputDemand ?? double.PositiveInfinity).ToArray();
             var remaining = people.Select(p => p.Labor).ToArray();
             var choices = new int[people.Length][];
             var next = new int[people.Length];
@@ -223,33 +281,59 @@ public static class WorkPlanner
                     .Where(w => CanWork(cells[p, w]) && priorities[p, w] > 0 && stock[w] > Epsilon)
                     .OrderBy(w => priorities[p, w]).ThenByDescending(w => works[w].NaturalPriority).ThenBy(w => w).ToArray();
             var requested = new double[works.Length];
+            var requestedOutput = new double[works.Length];
+            var fraction = new double[works.Length];
+            var stationRequests = new double[works.Length];
+            var stationGrants = new double[works.Length];
+            var stationTime = stations.Open();
             double unmapped = 0;
             // Each round exhausts at least one order or worker. Contenders for finite capacity
             // split it proportionally in the estimate; the game reserves real jobs individually.
             while (true)
             {
                 Array.Clear(requested);
+                Array.Clear(requestedOutput);
                 bool active = false;
                 for (int p = 0; p < people.Length; p++)
                 {
                     if (remaining[p] <= Epsilon) continue;
-                    while (next[p] < choices[p].Length && stock[choices[p][next[p]]] <= Epsilon) next[p]++;
+                    while (next[p] < choices[p].Length &&
+                        (stock[choices[p][next[p]]] <= Epsilon || outputLeft[choices[p][next[p]]] <= Epsilon ||
+                         stations.Exhausted(choices[p][next[p]], stationTime))) next[p]++;
                     if (next[p] == choices[p].Length) continue;
-                    requested[choices[p][next[p]]] += remaining[p];
+                    int work = choices[p][next[p]];
+                    requested[work] += remaining[p];
+                    if (works[work].OutputDemand.HasValue)
+                        requestedOutput[work] += remaining[p] * Math.Max(0, cells[p, work]!.Suitability);
                     active = true;
                 }
                 if (!active) break;
+                for (int w = 0; w < works.Length; w++)
+                {
+                    if (requested[w] <= 0) { stationRequests[w] = 0; continue; }
+                    fraction[w] = Math.Min(1, stock[w] / requested[w]);
+                    if (requestedOutput[w] > 0)
+                        fraction[w] = Math.Min(fraction[w], outputLeft[w] / requestedOutput[w]);
+                    stationRequests[w] = requested[w] * fraction[w];
+                }
+                if (stations.Shared) stations.Grant(stationRequests, stationTime, stationGrants);
+                for (int w = 0; w < works.Length; w++)
+                {
+                    if (requested[w] <= 0) continue;
+                    if (stations.Shared) fraction[w] = stationGrants[w] / requested[w];
+                    stock[w] = Math.Max(0, stock[w] - requested[w] * fraction[w]);
+                    outputLeft[w] = Math.Max(0, outputLeft[w] - requestedOutput[w] * fraction[w]);
+                }
                 for (int p = 0; p < people.Length; p++)
                 {
                     if (remaining[p] <= Epsilon || next[p] == choices[p].Length) continue;
                     int w = choices[p][next[p]];
-                    double used = remaining[p] * Math.Min(1, stock[w] / requested[w]);
+                    double used = remaining[p] * fraction[w];
                     remaining[p] -= used;
                     hours[p, w] += used;
                     if (groups[w] >= 0) shares[groups[w]] += used;
                     else unmapped += used;
                 }
-                for (int w = 0; w < works.Length; w++) stock[w] = Math.Max(0, stock[w] - requested[w]);
             }
             return new(hours, shares, unmapped);
         }
@@ -333,7 +417,8 @@ public static class WorkPlanner
             double workerLimit = Enumerable.Range(0, people.Length)
                 .Where(p => columns.Any(w => limits[w] > Epsilon && CanWork(cells[p, w])))
                 .Sum(p => people[p].Labor);
-            if (Math.Min(workerLimit, columns.Sum(w => limits[w])) + Epsilon < targets[group]) return ShortfallReason.Capacity;
+            var caps = allocationLimits ?? limits;
+            if (Math.Min(workerLimit, columns.Sum(w => caps[w])) + Epsilon < targets[group]) return ShortfallReason.Capacity;
             return ShortfallReason.PriorityOrder;
         }
     }

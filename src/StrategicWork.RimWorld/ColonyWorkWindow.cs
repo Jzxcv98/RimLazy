@@ -18,9 +18,17 @@ public sealed class ColonyWorkWindow : MainTabWindow
     private Map? map;
     private ColonyWorkState? state;
     private ColonyCapture? capture;
+    private ColonyCapture? planCapture;
+    private StrategyPreset? planPreset;
     private WorkPlan? plan;
     private double plannedLabor;
+    public bool PreviewIsRush { get; private set; }
+    public string? RushFocus { get; private set; }
     private List<PlannedCell> changes = [];
+    private IReadOnlyList<PlannedCell> resultCells = [];
+    private readonly List<string> resultSummary = [];
+    private float summaryWidth = -1;
+    private float[] summaryHeights = [];
     private Dictionary<string, string> pawnLabels = [];
     private Dictionary<string, string> workLabels = [];
     private bool captureAttempted;
@@ -51,6 +59,7 @@ public sealed class ColonyWorkWindow : MainTabWindow
         state = map?.GetComponent<ColonyWorkState>();
         page = Page.Strategy;
         presetName = "";
+        RushFocus = null;
         priorityBuffer = (state?.PriorityOverride ?? 0).ToString(CultureInfo.InvariantCulture);
         selectedPawn = null;
         scroll = Vector2.zero;
@@ -65,30 +74,136 @@ public sealed class ColonyWorkWindow : MainTabWindow
             captureAttempted = false;
         }
         plan = null;
+        planCapture = null;
+        planPreset = null;
+        PreviewIsRush = false;
         changes.Clear();
+        resultCells = [];
+        resultSummary.Clear();
         applied = false;
         notice = "";
     }
 
-    private void Capture()
+    private void Capture(bool rush = false)
     {
         captureAttempted = true;
         capture = null;
-        capture = ColonyAdapter.Capture(map!, state!.Overrides, state.LockedCells, state.PriorityOverride);
+        capture = ColonyAdapter.Capture(map!, state!.Overrides, state.LockedCells, state.PriorityOverride, rush);
         pawnLabels = capture.Pawns.ToDictionary(p => p.Id, p => p.Label);
         workLabels = capture.Works.ToDictionary(w => w.Id, w => w.Label);
     }
 
-    private void Solve()
+    public void SetRushFocus(string? strategyId)
     {
+        if (map != Find.CurrentMap) Bind(Find.CurrentMap);
+        if (strategyId != null && state?.Preset.Strategies.Any(s => s.Id == strategyId) != true)
+            throw new ArgumentException("The rush goal must be part of this map's strategy.", nameof(strategyId));
+        if (RushFocus == strategyId) return;
+        RushFocus = strategyId;
+        Invalidate(refreshCapture: false);
+    }
+
+    public WorkPlan PreviewAllocation(bool rush)
+    {
+        if (map != Find.CurrentMap) Bind(Find.CurrentMap);
+        if (map == null || state == null) throw new InvalidOperationException(T("SelectMap"));
         plan = null;
+        planCapture = null;
+        planPreset = null;
+        PreviewIsRush = false;
         changes.Clear();
-        Capture();
+        resultCells = [];
+        resultSummary.Clear();
+        Capture(rush);
         var current = capture!;
-        plan = WorkPlanner.Plan(current.Inputs, current.Columns, state!.Preset, current.MaxPriority);
+        var preset = state.Preset;
+        var focus = rush ? RushFocus : null;
+        var effectivePreset = focus == null ? preset : preset with
+        {
+            Strategies = preset.Strategies.Select(s => s with { RelativeWeight = s.Id == focus ? 1m : 0m }).ToArray()
+        };
+        var calculated = WorkPlanner.Plan(current.Inputs, current.Columns, effectivePreset, current.MaxPriority, rush);
         plannedLabor = current.Inputs.Sum(p => p.Labor);
-        changes = plan.Cells.Where(c => c.Before != c.After).ToList();
+        changes = calculated.Cells.Where(c => c.Before != c.After).ToList();
+        resultCells = calculated.Cells.Where(c => c.Before != c.After || ChangedForTraining(c))
+            .OrderByDescending(ChangedForTraining).ToList();
+        BuildSummary(current, calculated, preset, rush);
+        plan = calculated;
+        planPreset = preset;
+        planCapture = current;
+        PreviewIsRush = rush;
         applied = false;
+        return plan;
+    }
+
+    private static bool ChangedForTraining(PlannedCell cell) =>
+        cell.ReferencePriority.HasValue && cell.ReferencePriority.Value != cell.After;
+
+    private void BuildSummary(ColonyCapture current, WorkPlan result, StrategyPreset preset, bool rush)
+    {
+        summaryWidth = -1;
+        resultSummary.Add(rush ? T("RushMode") : T("RoutineMode", preset.TrainingLossLimit.ToString("P0")));
+        if (rush && RushFocus != null)
+            resultSummary.Add(T("RushFocusSummary", Direction(RushFocus)));
+        if (!rush && preset.TrainingLossLimit > 0)
+            resultSummary.Add(T(result.TrainingApplied ? "TrainingChosen" : "TrainingKept"));
+        resultSummary.Add(T("ResultsHelp"));
+        foreach (var estimate in result.Strategies)
+        {
+            string direction = T("Estimate", Direction(estimate.Id), Percent(estimate.TargetLabor, plannedLabor),
+                Percent(estimate.EstimatedLabor, plannedLabor));
+            if (estimate.Reason != ShortfallReason.None) direction += "  ·  " + T("Reason_" + estimate.Reason);
+            resultSummary.Add(direction);
+            if (estimate.TargetLabor <= 0 && estimate.EstimatedLabor <= 0) continue;
+            if (estimate.PerformanceComparable && estimate.ReferencePerformance > 0)
+            {
+                string performance = T("OutputComparison", Number(estimate.ReferencePerformance), Number(estimate.PlannedPerformance));
+                double loss = 1 - estimate.PlannedPerformance / estimate.ReferencePerformance;
+                if (loss > 0.00005)
+                    performance += "  ·  " + T("OutputLoss", loss.ToString("P1"));
+                resultSummary.Add(performance);
+            }
+            else resultSummary.Add(T("OutputUnknown"));
+            if (!rush && preset.TrainingLossLimit > 0)
+                resultSummary.Add(T("TrainingComparison", Number(estimate.ReferenceTraining), Number(estimate.PlannedTraining)));
+        }
+        resultSummary.Add(T("Remainder", Percent(result.UnassignedLabor, plannedLabor), Percent(result.UnmappedLabor, plannedLabor)));
+        var equipment = EquipmentAdvice.ForPlan(current, result);
+        if (equipment.Count > 0)
+        {
+            resultSummary.Add(T("EquipmentHeading"));
+            resultSummary.AddRange(equipment);
+        }
+        resultSummary.Add(T("ChangeCounts", changes.Count, resultCells.Count(ChangedForTraining)));
+    }
+
+    public WorkUndo ApplyPreview()
+    {
+        if (map == null || map != Find.CurrentMap || state == null)
+            throw new InvalidOperationException(T("SelectMap"));
+        if (plan == null || planCapture == null || applied)
+            throw new InvalidOperationException(T("PreviewFirst"));
+        try
+        {
+            if (planPreset != state.Preset) throw new InvalidOperationException(T("StalePlan"));
+            var history = ColonyAdapter.Apply(planCapture, plan);
+            if (history.Edits.Count > 0) state.LastUndo = history;
+            if (PreviewIsRush) RushFocus = null;
+            applied = true;
+            return history;
+        }
+        catch
+        {
+            Invalidate();
+            throw;
+        }
+    }
+
+    private void PreviewAndShow(bool rush)
+    {
+        PreviewAllocation(rush);
+        notice = T(rush ? "RushPreviewed" : "Previewed", changes.Count);
+        Show(Page.Results);
     }
 
     private void Perform(Action action)
@@ -113,7 +228,7 @@ public sealed class ColonyWorkWindow : MainTabWindow
     {
         if (map != Find.CurrentMap) Bind(Find.CurrentMap);
         if (map == null || state == null) { Widgets.Label(area, T("SelectMap")); return; }
-        if (!captureAttempted) Perform(Capture);
+        if (!captureAttempted && page is Page.Mapping or Page.Locks) Perform(() => Capture());
 
         float spacing = 4f;
         float tabWidth = (area.width - 3 * spacing) / 4;
@@ -125,10 +240,11 @@ public sealed class ColonyWorkWindow : MainTabWindow
         }
         decimal minimumPercent = state.Preset.Strategies.Sum(s => s.MinimumShare) * 100;
         string footer = minimumPercent > 100 ? T("InvalidMinimum", minimumPercent.ToString("0")) : notice;
-        if (capture?.ManualPriorities == false)
+        if (!Find.PlaySettings.useWorkPriorities)
             footer = footer.Length == 0 ? T("EnableManual") : footer + "\n" + T("EnableManual");
         float footerHeight = footer.Length == 0 ? 0 : Math.Min(80, Math.Max(26, Text.CalcHeight(footer, area.width)));
-        var actions = new Rect(area.x, area.yMax - Row, area.width, Row);
+        float actionHeight = area.width < 600 ? Row * 2 + 5 : Row;
+        var actions = new Rect(area.x, area.yMax - actionHeight, area.width, actionHeight);
         if (footerHeight > 0)
         {
             var status = new Rect(area.x, actions.y - footerHeight - 4, area.width, footerHeight);
@@ -149,14 +265,20 @@ public sealed class ColonyWorkWindow : MainTabWindow
 
     private void DrawActions(Rect rect)
     {
-        float width = (rect.width - 12) / 3;
-        var preview = new Rect(rect.x, rect.y, width, rect.height);
-        var apply = new Rect(preview.xMax + 6, rect.y, width, rect.height);
-        var undo = new Rect(apply.xMax + 6, rect.y, width, rect.height);
+        int cols = rect.width < 600 ? 2 : 4;
+        float width = (rect.width - (cols - 1) * 5) / cols;
+        Rect Button(int index) => new(rect.x + index % cols * (width + 5), rect.y + index / cols * (Row + 5), width, Row);
+        var preview = Button(0);
+        var rush = Button(1);
+        var apply = Button(2);
+        var undo = Button(3);
         bool valid = state!.Preset.Strategies.Sum(s => s.MinimumShare) <= 1m;
         if (Widgets.ButtonText(preview, T("Preview"), active: valid))
-            Perform(() => { Solve(); notice = T("Previewed", changes.Count); Show(Page.Results); });
-        if (capture?.ManualPriorities == false)
+            Perform(() => PreviewAndShow(false));
+        if (Widgets.ButtonText(rush, T("RushPreview"), active: valid))
+            Perform(() => PreviewAndShow(true));
+        TooltipHandler.TipRegion(rush, T("RushHint"));
+        if (!Find.PlaySettings.useWorkPriorities)
         {
             var work = DefDatabase<MainButtonDef>.GetNamedSilentFail("Work");
             if (Widgets.ButtonText(apply, T("OpenWork"), active: work != null) && work != null)
@@ -165,22 +287,14 @@ public sealed class ColonyWorkWindow : MainTabWindow
                 return;
             }
         }
-        else if (Widgets.ButtonText(apply, T("Apply"), active: valid && capture != null))
+        else if (Widgets.ButtonText(apply, T(plan == null || applied ? "Apply" : PreviewIsRush ? "ApplyRush" : "ApplyPreview"), active: valid))
             Perform(() => {
-                if (plan == null || applied) Solve();
-                WorkUndo history;
-                try { history = ColonyAdapter.Apply(capture!, plan!); }
-                catch
-                {
-                    Invalidate(); // The next attempt must use a new snapshot of the live table.
-                    throw;
-                }
-                if (history.Edits.Count > 0) state.LastUndo = history;
-                applied = true;
-                notice = T("Applied", history.Edits.Count);
+                if (plan == null || applied) PreviewAllocation(false);
+                var history = ApplyPreview();
+                notice = T(PreviewIsRush ? "RushApplied" : "Applied", history.Edits.Count);
                 Show(Page.Results);
             });
-        if (Widgets.ButtonText(undo, T("Undo"), active: state.LastUndo != null && capture?.ManualPriorities == true))
+        if (Widgets.ButtonText(undo, T("Undo"), active: state.LastUndo != null && Find.PlaySettings.useWorkPriorities))
             Perform(() => {
                 ColonyAdapter.Undo(map!, state.LastUndo!, state.LockedCells);
                 state.LastUndo = null;
@@ -202,7 +316,9 @@ public sealed class ColonyWorkWindow : MainTabWindow
                 (100 - minimumTotal).ToString("0"))
             : "";
         float spareHeight = spareWithNoWeights ? Text.CalcHeight(spareHint, viewWidth) + 6 : 0;
-        var view = new Rect(0, 0, viewWidth, hintHeight + 11 * Row + 20 + spareHeight);
+        string trainingHelp = T("TrainingHint");
+        float trainingHeight = Text.CalcHeight(trainingHelp, viewWidth) + 6;
+        var view = new Rect(0, 0, viewWidth, hintHeight + (config.Preset.Strategies.Count + 8) * Row + 20 + spareHeight + trainingHeight);
         Widgets.BeginScrollView(area, ref scroll, view);
         try
         {
@@ -229,6 +345,23 @@ public sealed class ColonyWorkWindow : MainTabWindow
             }
             decimal total = config.Preset.Strategies.Sum(s => s.MinimumShare) * 100;
             Widgets.Label(new Rect(0, y, view.width, Row), T(total > 100 ? "InvalidMinimum" : "MinimumTotal", total.ToString("0")));
+            y += Row;
+            int training = (int)Math.Round(config.Preset.TrainingLossLimit * 100);
+            float titleWidth = Math.Min(view.width * 0.45f, 220);
+            Widgets.Label(new Rect(0, y + 3, titleWidth, Row), T("TrainingLimit"));
+            int selectedTraining = Slider(new Rect(titleWidth, y, view.width - titleWidth - 5, Row), training, true);
+            if (training != selectedTraining)
+            {
+                config.SetTrainingLossPercent(selectedTraining);
+                Invalidate(refreshCapture: false);
+            }
+            y += Row;
+            Widgets.Label(new Rect(0, y, view.width, trainingHeight), trainingHelp);
+            y += trainingHeight;
+            var rushRect = new Rect(0, y, view.width, Row - 3);
+            if (Widgets.ButtonText(rushRect, T("RushFocus", RushFocus == null ? T("RushInherit") : Direction(RushFocus))))
+                RushFocusMenu();
+            TooltipHandler.TipRegion(rushRect, T("RushFocusHint"));
             y += Row;
             bool preserve = config.Preset.UnweightedRemainder == UnweightedRemainder.PreserveExisting;
             bool prior = preserve;
@@ -272,6 +405,7 @@ public sealed class ColonyWorkWindow : MainTabWindow
         {
             state!.Preset = preset;
             presetName = name;
+            RushFocus = null;
             Invalidate(refreshCapture: false);
         }
         var menu = new List<FloatMenuOption> {
@@ -280,6 +414,14 @@ public sealed class ColonyWorkWindow : MainTabWindow
         foreach (var pair in state!.SavedPresets.OrderBy(p => p.Key, StringComparer.Ordinal))
             menu.Add(new(pair.Key, () => Select(pair.Value, pair.Key)));
         Find.WindowStack.Add(new FloatMenu(menu));
+    }
+
+    private void RushFocusMenu()
+    {
+        var options = new List<FloatMenuOption> { new(T("RushInherit"), () => SetRushFocus(null)) };
+        foreach (var goal in state!.Preset.Strategies)
+            options.Add(new(Direction(goal.Id), () => SetRushFocus(goal.Id)));
+        Find.WindowStack.Add(new FloatMenu(options));
     }
 
     private void DrawMapping(Rect area)
@@ -361,6 +503,8 @@ public sealed class ColonyWorkWindow : MainTabWindow
             bool locked = before;
             string priority = cell.Eligible ? Priority(cell.Current) : T("Ineligible");
             Widgets.CheckboxLabeled(row, work.Label + "  ·  " + priority, ref locked, disabled: !cell.Eligible && !locked);
+            if (data.CellDetails.TryGetValue(key, out var detail))
+                TooltipHandler.TipRegion(row, DescribeAssessment(detail, state.Preset.TrainingLossLimit > 0));
             if (locked == before) return;
             if (locked) state.LockedCells.Add(key);
             else state.LockedCells.Remove(key);
@@ -371,33 +515,53 @@ public sealed class ColonyWorkWindow : MainTabWindow
     private void DrawResults(Rect area)
     {
         if (plan == null) { Widgets.Label(area, T("PreviewFirst")); return; }
-        var estimates = plan.Strategies;
-        double total = plannedLabor;
-        float y = area.y;
-        string advice = T("ResultsHelp");
-        float helpHeight = Math.Max(Row, Text.CalcHeight(advice, area.width) + 4);
-        Widgets.Label(new Rect(area.x, y, area.width, helpHeight), advice);
-        y += helpHeight;
-        var list = new Rect(area.x, y, area.width, Math.Max(1, area.yMax - y));
-        Rows(list, estimates.Count + 2 + changes.Count, (i, row) => {
-            string line;
-            if (i < estimates.Count)
+        float width = Math.Max(1, area.width - 18);
+        if (summaryWidth != width)
+        {
+            summaryWidth = width;
+            summaryHeights = resultSummary.Select(line => Math.Max(24, Text.CalcHeight(line, width) + 5)).ToArray();
+        }
+        float summaryHeight = summaryHeights.Sum();
+        var view = new Rect(0, 0, width, summaryHeight + resultCells.Count * Row);
+        Widgets.BeginScrollView(area, ref scroll, view);
+        try
+        {
+            float y = 0;
+            for (int i = 0; i < resultSummary.Count; i++)
             {
-                var s = estimates[i];
-                line = T("Estimate", Direction(s.Id), Percent(s.TargetLabor, total), Percent(s.EstimatedLabor, total));
-                if (s.Reason != ShortfallReason.None) line += "  ·  " + T("Reason_" + s.Reason);
+                Widgets.Label(new Rect(0, y, width, summaryHeights[i]), resultSummary[i]);
+                y += summaryHeights[i];
             }
-            else if (i == estimates.Count) line = T("Remainder", Percent(plan.UnassignedLabor, total), Percent(plan.UnmappedLabor, total));
-            else if (i == estimates.Count + 1) line = T("ChangedCells", changes.Count);
-            else
+            int first = Math.Max(0, (int)Math.Floor((scroll.y - summaryHeight) / Row));
+            int last = Math.Min(resultCells.Count, first + (int)Math.Ceiling(area.height / Row) + 2);
+            for (int i = first; i < last; i++)
             {
-                var cell = changes[i - estimates.Count - 2];
-                line = T("Change", pawnLabels.GetValueOrDefault(cell.PawnId, cell.PawnId), workLabels.GetValueOrDefault(cell.WorkId, cell.WorkId),
+                var cell = resultCells[i];
+                var row = new Rect(0, summaryHeight + i * Row, width, Row);
+                var line = T("Change", pawnLabels.GetValueOrDefault(cell.PawnId, cell.PawnId), workLabels.GetValueOrDefault(cell.WorkId, cell.WorkId),
                     Priority(cell.Before), Priority(cell.After));
+                if (ChangedForTraining(cell)) line += "  ·  " + T("ReferencePriority", Priority(cell.ReferencePriority!.Value));
+                Widgets.Label(row, line);
+                string key = ColonyAdapter.CellKey(cell.PawnId, cell.WorkId);
+                TooltipHandler.TipRegion(row, planCapture!.CellDetails.TryGetValue(key, out var detail)
+                    ? line + "\n" + DescribeAssessment(detail, !PreviewIsRush && planPreset!.TrainingLossLimit > 0)
+                    : line);
             }
-            Widgets.Label(row, line);
-            TooltipHandler.TipRegion(row, line);
-        });
+        }
+        finally { Widgets.EndScrollView(); }
+    }
+
+    private static string DescribeAssessment(WorkAssessment detail, bool showTraining)
+    {
+        string text = T("CellPerformance", Number(detail.EstimatedPerformance), Number(detail.EquippedPerformance));
+        if (detail.PoisonChance is { } risk)
+            text += "\n" + T("CellPoison", risk.ToString("P2"));
+        if (detail.EstimatedTravelShare > 0)
+            text += "\n" + T("CellTravel", detail.EstimatedTravelShare.ToString("P0"));
+        if (showTraining && detail.TrainingGain > 0)
+            text += "\n" + T("CellTraining", Number(detail.TrainingGain));
+        if (detail.Approximate) text += "\n" + T("CellApproximate");
+        return text;
     }
 
     private void Rows(Rect area, int count, Action<int, Rect> draw)
@@ -414,6 +578,7 @@ public sealed class ColonyWorkWindow : MainTabWindow
     }
 
     private static string Percent(double value, double total) => (total > 0 ? value / total : 0).ToString("P0");
+    private static string Number(double value) => value.ToString("0.###", CultureInfo.CurrentCulture);
     private static string Priority(int value) => value == 0 ? T("Off") : value.ToString();
     private static string Direction(string id) => T("Direction_" + id);
     private static string T(string key) => ("RimLazy_" + key).Translate().ToString();

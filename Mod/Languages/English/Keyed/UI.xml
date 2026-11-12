@@ -7,16 +7,28 @@
   <RimLazy_Page_Results>Results</RimLazy_Page_Results>
   <RimLazy_EnableManual>Enable manual priorities in the game's Work tab to apply a plan.</RimLazy_EnableManual>
   <RimLazy_OpenWork>Open Work tab</RimLazy_OpenWork>
-  <RimLazy_Preview>Preview allocation</RimLazy_Preview>
-  <RimLazy_Apply>Calculate and apply</RimLazy_Apply>
+  <RimLazy_Preview>Routine preview</RimLazy_Preview>
+  <RimLazy_RushPreview>Rush preview</RimLazy_RushPreview>
+  <RimLazy_RushHint>Preview this hour using current equipment and work conditions. Training is set to 0% for this plan.</RimLazy_RushHint>
+  <RimLazy_RushFocus>Rush focus · {0}</RimLazy_RushFocus>
+  <RimLazy_RushInherit>Use preset weights</RimLazy_RushInherit>
+  <RimLazy_RushFocusHint>Keep all minimum shares and send remaining labor to a chosen goal for this rush. The choice clears after applying it.</RimLazy_RushFocusHint>
+  <RimLazy_RushFocusSummary>Remaining labor for this rush → {0}</RimLazy_RushFocusSummary>
+  <RimLazy_Apply>Apply routine plan</RimLazy_Apply>
+  <RimLazy_ApplyPreview>Apply preview</RimLazy_ApplyPreview>
+  <RimLazy_ApplyRush>Apply rush plan</RimLazy_ApplyRush>
   <RimLazy_Undo>Undo last application</RimLazy_Undo>
   <RimLazy_Previewed>Preview ready. {0} priorities would change.</RimLazy_Previewed>
+  <RimLazy_RushPreviewed>Rush preview ready. {0} priorities would change.</RimLazy_RushPreviewed>
+  <RimLazy_RushApplied>Rush plan applied. Changed {0} priorities. Your routine preset is saved separately.</RimLazy_RushApplied>
   <RimLazy_Applied>Applied {0} priority changes.</RimLazy_Applied>
   <RimLazy_Undone>Restored the priorities from before the last application.</RimLazy_Undone>
   <RimLazy_AllocationHelp>Set a minimum share of work time for each goal. The weights divide the remaining time. Equal weights receive equal shares.</RimLazy_AllocationHelp>
   <RimLazy_Direction>Goal</RimLazy_Direction>
   <RimLazy_Minimum>Minimum share</RimLazy_Minimum>
   <RimLazy_Weight>Remaining weight</RimLazy_Weight>
+  <RimLazy_TrainingLimit>Training potential</RimLazy_TrainingLimit>
+  <RimLazy_TrainingHint>Maximum estimated output loss you accept per goal to train workers. Use 0% to select by current performance alone.</RimLazy_TrainingHint>
   <RimLazy_Direction_survival>Food and upkeep</RimLazy_Direction_survival>
   <RimLazy_Direction_expansion>Construction and mining</RimLazy_Direction_expansion>
   <RimLazy_Direction_research>Research</RimLazy_Direction_research>
@@ -43,7 +55,23 @@
   <RimLazy_LocksHelp>Select a colonist above. Check a work type to keep that colonist’s current priority when applying a plan.</RimLazy_LocksHelp>
   <RimLazy_Ineligible>Cannot perform</RimLazy_Ineligible>
   <RimLazy_PreviewFirst>Preview an allocation to see estimated work shares and changed priorities.</RimLazy_PreviewFirst>
-  <RimLazy_ResultsHelp>Estimated shares assume available tasks. Actual hours depend on jobs, materials and travel.</RimLazy_ResultsHelp>
+  <RimLazy_RoutineMode>Routine plan · next game day · training loss limit {0}</RimLazy_RoutineMode>
+  <RimLazy_RushMode>Rush plan · next game hour · current equipment · training 0%</RimLazy_RushMode>
+  <RimLazy_TrainingChosen>A training opportunity changed the planned priorities within your loss limit.</RimLazy_TrainingChosen>
+  <RimLazy_TrainingKept>The current-performance plan was retained within your training limit.</RimLazy_TrainingKept>
+  <RimLazy_ResultsHelp>Estimates depend on available jobs, supplies and travel. Hover over a changed priority for details.</RimLazy_ResultsHelp>
+  <RimLazy_OutputComparison>Estimated output index · reference {0} → plan {1}</RimLazy_OutputComparison>
+  <RimLazy_OutputLoss>estimated loss {0}</RimLazy_OutputLoss>
+  <RimLazy_OutputUnknown>Available work gives no reliable output comparison for this goal.</RimLazy_OutputUnknown>
+  <RimLazy_TrainingComparison>Estimated training value · reference {0} → plan {1}</RimLazy_TrainingComparison>
+  <RimLazy_EquipmentHeading>Suggested equipment transfers</RimLazy_EquipmentHeading>
+  <RimLazy_ChangeCounts>Changed priorities: {0} · priorities affected by training: {1}</RimLazy_ChangeCounts>
+  <RimLazy_ReferencePriority>Current-performance plan: {0}</RimLazy_ReferencePriority>
+  <RimLazy_CellPerformance>Estimated work rate: {0}. With current equipment: {1}.</RimLazy_CellPerformance>
+  <RimLazy_CellPoison>Estimated risk of contaminating the cooked product: {0}.</RimLazy_CellPoison>
+  <RimLazy_CellTravel>Estimated time spent traveling: {0}.</RimLazy_CellTravel>
+  <RimLazy_CellTraining>Estimated training value per unit of labor: {0}.</RimLazy_CellTraining>
+  <RimLazy_CellApproximate>This estimate uses incomplete task or worksite data.</RimLazy_CellApproximate>
   <RimLazy_Estimate>{0}: target {1} · estimate {2}</RimLazy_Estimate>
   <RimLazy_Reason_NoMappedWork>No work types mapped</RimLazy_Reason_NoMappedWork>
   <RimLazy_Reason_NoEligiblePawn>No eligible colonist</RimLazy_Reason_NoEligiblePawn>

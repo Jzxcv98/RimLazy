@@ -13,6 +13,8 @@ public sealed record ColonyCapture(Map Map, List<ColonyPawn> Pawns, List<ColonyW
     List<PawnInput> Inputs, List<WorkColumn> Columns, int MaxPriority, string PrioritySource, bool ManualPriorities)
 {
     internal int RequestedRange { get; init; }
+    public bool Rush { get; init; }
+    public Dictionary<string,WorkAssessment> CellDetails { get; init; } = new(StringComparer.Ordinal);
     internal IReadOnlyDictionary<string, string> Mappings { get; init; } = new Dictionary<string, string>();
     internal IReadOnlySet<string> Locks { get; init; } = new HashSet<string>();
 }
@@ -28,23 +30,40 @@ public static class ColonyAdapter
         map.mapPawns.FreeColonistsSpawned.Where(p => p.workSettings is { Initialized: true, EverWork: true });
 
     public static ColonyCapture Capture(Map map, IReadOnlyDictionary<string, string> mappings,
-        IReadOnlySet<string> lockedCells, int priorityOverride = 0)
+        IReadOnlySet<string> lockedCells, int priorityOverride = 0, bool rush = false)
     {
+        int horizon = rush ? GenDate.TicksPerHour : GenDate.TicksPerDay;
+        var context = new MapWorkOpportunities(map,horizon);
         var workers = Workers(map).OrderBy(p => p.GetUniqueLoadID(), StringComparer.Ordinal).ToList();
         var definitions = DefDatabase<WorkTypeDef>.AllDefsListForReading.Where(d => d.VisibleCurrently)
             .OrderByDescending(d => d.naturalPriority).ThenBy(d => d.defName, StringComparer.Ordinal).ToList();
         var works = new List<ColonyWork>(definitions.Count);
         var columns = new List<WorkColumn>(definitions.Count);
-        var demand = new Dictionary<WorkTypeDef, WorkAvailability>();
+        var demand = new Dictionary<WorkTypeDef, OpportunitySet>();
+        var details = new Dictionary<string,WorkAssessment>(StringComparer.Ordinal);
         foreach (var def in definitions)
         {
             string? strategy = mappings.TryGetValue(def.defName, out var selected)
                 ? (string.IsNullOrEmpty(selected) ? null : selected)
                 : WorkProfile.SuggestStrategy(def);
-            var availability = WorkProfile.ReadAvailability(map, def);
+            var availability = context.Read(def);
             demand.Add(def, availability);
             works.Add(new(def.defName, def.labelShort ?? def.LabelCap.ToString(), strategy));
-            columns.Add(new(def.defName, strategy, def.naturalPriority, availability.Capacity, Specialties.For(def)?.Family));
+            columns.Add(new(def.defName, strategy, def.naturalPriority, availability.Capacity,
+                Specialties.For(def)?.Family, availability.Demand,availability.SharedSiteIds));
+        }
+        // Different providers can expose the same order in several work columns. A one-off order has
+        // one finite amount of useful output; divide its cap among managed views of that order.
+        var billViews = demand.Where(p=>columns.Any(c=>c.Id==p.Key.defName && c.StrategyId!=null))
+            .SelectMany(p=>(p.Value.Orders ?? []).Select(o=>o.Bill).Distinct())
+            .GroupBy(b=>b).ToDictionary(g=>g.Key,g=>g.Count());
+        for (int i=0;i<columns.Count;i++)
+        {
+            if (columns[i].StrategyId==null || columns[i].OutputDemand==null ||
+                demand[definitions[i]].Orders is not {} orders) continue;
+            var once = orders.DistinctBy(o=>o.Bill);
+            double sharedDemand = once.Sum(o=>o.Iterations!.Value*o.WorkTicks/billViews[o.Bill])/horizon;
+            columns[i]=columns[i] with { OutputDemand=sharedDemand };
         }
 
         var pawns = new List<ColonyPawn>(workers.Count);
@@ -54,21 +73,24 @@ public static class ColonyAdapter
         {
             string id = worker.GetUniqueLoadID();
             var cells = new Dictionary<string, WorkCell>(StringComparer.Ordinal);
+            var evaluator = new WorkerAssessment(worker, new StatEvaluation(worker,rush,horizon),context,rush);
             foreach (var def in definitions)
             {
                 int value = worker.workSettings.GetPriority(def);
                 observed = Math.Max(observed, value);
-                bool eligible = WorkProfile.CanDo(worker, def) && demand[def].Allows(worker);
-                cells.Add(def.defName, new(value, eligible, eligible ? WorkProfile.Suitability(worker, def) : 0,
-                    lockedCells.Contains(CellKey(id, def.defName))));
+                var evaluated = evaluator.Evaluate(def,demand[def]);
+                var key = CellKey(id,def.defName);
+                details.Add(key,evaluated.Detail);
+                cells.Add(def.defName,new(value,evaluated.Eligible,evaluated.Eligible ? evaluated.Detail.EstimatedPerformance : 0,
+                    lockedCells.Contains(key),evaluated.Eligible ? evaluated.Detail.TrainingGain : 0,evaluated.Comparable));
             }
             pawns.Add(new(id, worker.LabelShortCap.ToString()));
-            inputs.Add(new(id, cells, worker.Downed ? 0 : 1));
+            inputs.Add(new(id,cells,WorkProfile.AvailableLabor(worker,rush)));
         }
         var domain = PriorityDomain.Resolve(observed, priorityOverride);
         return new(map, pawns, works, inputs, columns, domain.Max, domain.Source, Find.PlaySettings.useWorkPriorities)
         {
-            RequestedRange = priorityOverride, Mappings = mappings, Locks = lockedCells
+            RequestedRange = priorityOverride, Mappings = mappings, Locks = lockedCells, Rush = rush, CellDetails = details
         };
     }
 
@@ -78,7 +100,7 @@ public static class ColonyAdapter
         RequireManual(map);
         if (!capture.ManualPriorities)
             throw Problem("RimLazy_StalePlan");
-        var live = Capture(map, capture.Mappings, capture.Locks, capture.RequestedRange);
+        var live = Capture(map, capture.Mappings, capture.Locks, capture.RequestedRange,capture.Rush);
         if (live.MaxPriority != capture.MaxPriority || !live.Columns.SequenceEqual(capture.Columns) ||
             live.Inputs.Count != capture.Inputs.Count)
             throw Problem("RimLazy_StalePlan");
@@ -90,7 +112,10 @@ public static class ColonyAdapter
             var now = live.Inputs[i];
             if (was.Id != now.Id || was.Labor != now.Labor || was.Cells.Any(pair =>
                 !now.Cells.TryGetValue(pair.Key, out var c) || c.Current != pair.Value.Current ||
-                c.Eligible != pair.Value.Eligible || c.Locked != pair.Value.Locked))
+                c.Eligible != pair.Value.Eligible || c.Locked != pair.Value.Locked ||
+                c.PerformanceComparable != pair.Value.PerformanceComparable ||
+                MateriallyDifferent(c.Suitability,pair.Value.Suitability) ||
+                MateriallyDifferent(c.TrainingGain,pair.Value.TrainingGain)))
                 throw Problem("RimLazy_StalePlan");
         }
         var workers = Workers(map).ToDictionary(p => p.GetUniqueLoadID(), StringComparer.Ordinal);
@@ -184,4 +209,6 @@ public static class ColonyAdapter
     }
 
     internal static InvalidOperationException Problem(string key) => new(key.Translate().ToString());
+    private static bool MateriallyDifferent(double a,double b) =>
+        Math.Abs(a-b)>0.10*Math.Max(0.01,Math.Max(Math.Abs(a),Math.Abs(b)));
 }

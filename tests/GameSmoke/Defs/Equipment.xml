@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="CowboyHat">
+    <defName>RimLazyQA_ChefHat</defName>
+    <label>test kitchen hat</label>
+    <description>Disposable regression-test gear with known modifiers.</description>
+    <equippedStatOffsets><FoodPoisonChance>-0.35</FoodPoisonChance><MoveSpeed>0.4</MoveSpeed></equippedStatOffsets>
+  </ThingDef>
+</Defs>

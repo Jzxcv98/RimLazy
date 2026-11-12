@@ -4,7 +4,7 @@ using Verse;
 namespace StrategicWork.RimWorld;
 
 // defNames are persistent game IDs, including those used in existing Complex Jobs saves.
-internal sealed record Specialty(string Strategy, string Family, string Speed, string? Outcome = null, double SkillWeight = 1);
+internal sealed record Specialty(string Strategy, string Family, string Speed, string? Outcome = null);
 
 internal static class Specialties
 {
@@ -13,7 +13,7 @@ internal static class Specialties
     {
         Add("Doctor",          "survival",  "Doctor",       "MedicalTendSpeed", "MedicalTendQuality");
         Add("FSFSurgeon",      "survival",  "Doctor",       "MedicalOperationSpeed", "MedicalSurgerySuccessChance");
-        Add("FSFNurse",        "survival",  "Doctor",       "MoveSpeed", skillWeight: 0.2);
+        Add("FSFNurse",        "survival",  "Doctor",       "MoveSpeed");
         Add("FSFTraining",     "survival",  "Handling",     "TrainAnimalChance");
         Add("FSFTaming",       "survival",  "Handling",     "TameAnimalChance");
         Add("FSFSlaughter",    "survival",  "Handling",     "MoveSpeed");
@@ -52,27 +52,34 @@ internal static class Specialties
         Add("FSFRescue",       "survival",  "Doctor",       "MoveSpeed", "CarryingCapacity");
     }
 
-    private static void Add(string id, string strategy, string family, string speed, string? outcome = null,
-        double skillWeight = 1) => Roles.Add(id, new Specialty(strategy, family, speed, outcome, skillWeight));
+    private static void Add(string id, string strategy, string family, string speed, string? outcome = null) => Roles.Add(id, new Specialty(strategy, family, speed, outcome));
 
     internal static Specialty? For(WorkTypeDef work) => Roles.GetValueOrDefault(work.defName);
 
-    internal static double Performance(Pawn pawn, Specialty specialty)
+    internal static SkillDef? LearningSkill(string id)
     {
-        double speed = RelativeStat(pawn, specialty.Speed);
-        if (specialty.Outcome is not { } outcome) return speed;
-        // Balance speed against the result of the job. Low success should make a fast surgeon less suitable.
-        double result = RelativeStat(pawn, outcome);
-        return Math.Sqrt(speed * result) * (specialty.Outcome == "MedicalSurgerySuccessChance" ? Math.Min(1, result) : 1);
+        return id switch
+        {
+            "Research" or "FSFHack" or "FSFScan" => SkillDefOf.Intellectual,
+            "Construction" or "FSFRepair" or "FSFDeconstruct" or "FSFSmoothing" => SkillDefOf.Construction,
+            "Growing" or "FSFHarvesting" or "PlantCutting" or "FSFPruning" => SkillDefOf.Plants,
+            "FSFDrilling" or "Mining" => SkillDefOf.Mining,
+            "FSFMechanoids" => SkillDefOf.Crafting,
+            "FSFTraining" or "FSFTaming" or "Handling" or "Fishing" => SkillDefOf.Animals,
+            "Doctor" or "FSFSelfTend" or "FSFSurgeon" => SkillDefOf.Medicine,
+            _ => null
+        };
     }
 
-    private static double RelativeStat(Pawn pawn, string statName)
+    internal static double LearningFactor(string id) => id switch
     {
-        // Some DLC stats are absent when their expansion is inactive.
-        var stat = DefDatabase<StatDef>.GetNamedSilentFail(statName);
-        if (stat == null) return 1;
-        double baseline = stat.defaultBaseValue > 0 ? stat.defaultBaseValue : 1;
-        double value = pawn.GetStatValue(stat) / baseline;
-        return double.IsFinite(value) ? Math.Clamp(value, 0.05, 5) : 1;
-    }
+        "Construction" or "FSFDeconstruct" => 2.5,
+        "FSFRepair" or "FSFMechanoids" => 0.5,
+        "FSFDrilling" => 0.65,
+        "Mining" => 0.7,
+        "FSFScan" => 0.35,
+        "Growing" or "FSFHarvesting" or "FSFPruning" => 0.85,
+        "Fishing" => 0.25,
+        _ => 1
+    };
 }
