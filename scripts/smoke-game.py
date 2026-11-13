@@ -17,6 +17,7 @@ def main():
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--complex-jobs", type=Path, help="Also load the real [FSF] Complex Jobs to check coexistence")
     mode.add_argument("--legacy-save", type=Path, help="Copy and migrate an existing six-tier v0.1 + Complex Jobs QA save")
+    mode.add_argument("--campaign-save", type=Path, help="Replay an isolated Core-only campaign checkpoint and verify immediate and stale work previews")
     mode.add_argument("--changed-splits-save", type=Path, help="Load a native default-layout QA save after enabling all optional columns")
     mode.add_argument("--all-splits", action="store_true", help="Enable every optional native work column in the isolated settings")
     mode.add_argument("--legacy-settings", type=Path, help="Verify the player's matching Complex Jobs XML Extensions settings are imported")
@@ -36,14 +37,17 @@ def main():
             if not about.is_file() or (ElementTree.parse(about).findtext("packageId") or "").lower() != expected:
                 parser.error(f"Expected {expected} in {path}")
     scenario = next((label for option, label in (
-        (args.legacy_save, "migration"), (args.changed_splits_save, "change-layout"), (args.complex_jobs, "coexist"),
+        (args.campaign_save, "campaign-replay"), (args.legacy_save, "migration"), (args.changed_splits_save, "change-layout"), (args.complex_jobs, "coexist"),
         (args.all_splits, "all-splits"), (args.legacy_settings, "legacy-settings")
     ) if option), "native")
-    source_save = args.legacy_save or args.changed_splits_save
+    source_save = args.campaign_save or args.legacy_save or args.changed_splits_save
     if source_save:
         save_root = ElementTree.parse(source_save)
         active = {node.text.casefold() for node in save_root.findall("meta/modIds/li") if node.text}
-        if not {"rimlazy.qaprobe", "rimlazy.strategicwork"}.issubset(active) or ("frozensnowfox.complexjobs" in active) != bool(args.legacy_save):
+        if args.campaign_save:
+            if active != {"brrainz.harmony", "ludeon.rimworld", "rimlazy.strategicwork", "rimlazy.campaign"}:
+                parser.error("Expected a Core-only disposable RimLazy campaign checkpoint")
+        elif not {"rimlazy.qaprobe", "rimlazy.strategicwork"}.issubset(active) or ("frozensnowfox.complexjobs" in active) != bool(args.legacy_save):
             parser.error("Expected a disposable quicktest save from the requested source layout")
     local = repo / ".local"
     profile = local / f"smoke-{scenario}-{time.time_ns()}"
@@ -81,7 +85,18 @@ def main():
         ElementTree.ElementTree(options).write(config / "RimLazy.DetailSettings.xml", encoding="utf-8", xml_declaration=True)
     if source_save:
         (profile / "Saves").mkdir()
-        shutil.copy2(source_save, profile / "Saves/RimLazy-migration-input.rws")
+        target_save = profile / "Saves/RimLazy-migration-input.rws"
+        if args.campaign_save:
+            # Only the campaign driver's counters are removed. Pawn data, map, real priorities
+            # and bill state come from the original save. The autonomous player is never loaded.
+            components = save_root.find("game/components")
+            old_driver = components.find("li[@Class='RimLazy.Campaign.CampaignController']") if components is not None else None
+            if old_driver is None:
+                parser.error("Missing campaign bookkeeping in the input checkpoint")
+            components.remove(old_driver)
+            save_root.write(target_save, encoding="utf-8", xml_declaration=True)
+        else:
+            shutil.copy2(source_save, target_save)
     if args.changed_splits_save:
         expected = {}
         for pawn in save_root.findall("game/maps/li/things/thing"):
@@ -116,7 +131,10 @@ def main():
             shutil.copy2(f, shadow / f.name)
     for name in ("Data", "Rendering", "vulkan"):
         if (game / name).is_dir():
-            shutil.copytree(game / name, shadow / name)
+            if name == "Data" and args.campaign_save:
+                shutil.copytree(game / "Data/Core", shadow / "Data/Core")
+            else:
+                shutil.copytree(game / name, shadow / name)
     mods = shadow / "Mods"
     player_mod = mods / "RimLazy"
     if args.player_package:
@@ -142,7 +160,7 @@ def main():
     print(f"{version}; evidence: {profile}", flush=True)
     result = profile / "RimLazySmoke.json"
     with (profile / "console.log").open("wb") as log:
-        process = subprocess.Popen([str(shadow / "RimWorld.exe"), "-Headless", "-quicktest", "-mod=" + ",".join(ids),
+        process = subprocess.Popen([str(shadow / "RimWorld.exe"), "-Headless", "-NoFileLog", "-quicktest", "-mod=" + ",".join(ids),
                                     "-savedatafolder=" + str(profile)], cwd=shadow, env=env, stdout=log, stderr=log,
                                    creationflags=subprocess.CREATE_NO_WINDOW)
         try:
@@ -163,6 +181,9 @@ def main():
         raise SystemExit("Probe did not complete. See console.log in the evidence folder.")
     report = json.loads(result.read_text(encoding="utf-8-sig"))
     report.update(gameBuild=version, assemblySha256=hashes)
+    if args.campaign_save:
+        report.update(sourceSaveSha256=hashlib.sha256(source_save.read_bytes()).hexdigest(),
+                      sourceTick=int(save_root.findtext("game/tickManager/ticksGame")))
     with (profile / "console.log").open(encoding="utf-8", errors="replace") as log_lines:
         errors = [line.strip() for line in log_lines if " ERROR " in line]
     report["gameErrors"] = errors[:10]

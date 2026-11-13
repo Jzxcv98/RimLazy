@@ -35,7 +35,7 @@ public sealed class PlannerProbe(Map map) : MapComponent(map)
 
     public override void MapComponentUpdate()
     {
-        if (done || Scenario is not ("native" or "coexist" or "migration" or "all-splits" or "legacy-settings" or "change-layout") ||
+        if (done || Scenario is not ("native" or "coexist" or "migration" or "all-splits" or "legacy-settings" or "change-layout" or "campaign-replay") ||
             Current.ProgramState != ProgramState.Playing || Find.CurrentMap != map ||
             map.mapPawns.FreeColonistsSpawned.Count == 0 || frames++ < 12) return;
         if (!Environment.GetCommandLineArgs().Contains("-quicktest", StringComparer.OrdinalIgnoreCase) ||
@@ -48,7 +48,7 @@ public sealed class PlannerProbe(Map map) : MapComponent(map)
                 if (oldMap != map) VerifyReload(state);
                 return;
             }
-            if (Scenario is "migration" or "change-layout")
+            if (Scenario is "migration" or "change-layout" or "campaign-replay")
             {
                 if (bootstrapMap == null)
                 {
@@ -57,6 +57,16 @@ public sealed class PlannerProbe(Map map) : MapComponent(map)
                     return;
                 }
                 if (bootstrapMap == map) return;
+                if (Scenario == "campaign-replay")
+                {
+                    CampaignSnapshotChecks.Verify(map, state);
+                    var captured = Capture(state);
+                    workers = captured.Pawns.Count;
+                    columns = captured.Works.Count;
+                    maxPriority = captured.MaxPriority;
+                    Finish(null);
+                    return;
+                }
                 if (Scenario == "change-layout") VerifyChangedLayout(state);
                 VerifyMigration(state);
             }
@@ -188,7 +198,9 @@ public sealed class PlannerProbe(Map map) : MapComponent(map)
         {
             VerifyRushFocus(state);
             WorkPolicyChecks.Verify(map);
+            MaintenanceRouteChecks.Verify(map);
             RealOrderChecks.Verify(map);
+            UnfinishedOrderChecks.Verify(map);
         }
         else if (Scenario == "legacy-settings") DisabledMedicalChecks.Verify(map);
         Finish(null);

@@ -1,6 +1,6 @@
 # RimLazy · 殖民地分工
 
-RimWorld 1.7 的本地工作分配 MOD。v0.3.1 支持培养潜力和单次赶工，内置细分岗位和可配置的工作优先级，默认六档。你决定各战略需要的人力，以及愿意为培养让出多少当期表现。RimLazy 根据地图上的工作、殖民者和设备生成工作表。
+RimWorld 1.7 的本地工作分配 MOD。v0.3.2 支持培养潜力和单次赶工，内置细分岗位和可配置的工作优先级，默认六档。你决定各战略需要的人力，以及愿意为培养让出多少当期表现。RimLazy 根据地图上的工作、殖民者和设备生成工作表。
 
 ## 怎么用
 
@@ -31,11 +31,11 @@ RimWorld 1.7 的本地工作分配 MOD。v0.3.1 支持培养潜力和单次赶�
 ./scripts/build-mod.ps1 -GameDir 'D:/Steam/steamapps/common/RimWorld'
 ```
 
-构建脚本读取本机 1.7 游戏程序集及同一 Steam 库的 Harmony 1.7。非 Steam 布局可将环境变量 `HARMONY_DIR` 指向 Harmony 模组根目录。发行包在 `.artifacts/RimLazy-0.3.1.zip`。核心测试可独立运行。Windows 上可用 Python 3.12+ 执行隔离实机测试。
+构建脚本读取本机 1.7 游戏程序集及同一 Steam 库的 Harmony 1.7。非 Steam 布局可将环境变量 `HARMONY_DIR` 指向 Harmony 模组根目录。发行包在 `.artifacts/RimLazy-0.3.2.zip`。核心测试可独立运行。Windows 上可用 Python 3.12+ 执行隔离实机测试。
 
 ```powershell
 python scripts/smoke-game.py --game 'D:/Steam/steamapps/common/RimWorld'
 python scripts/smoke-game.py --game 'D:/Steam/steamapps/common/RimWorld' --all-splits
 ```
 
-测试运行在临时游戏副本和隔离存档中。可用 `--player-package` 指向已解压的发行目录以复核运行的 DLL。[0.3.1 手测问题回归](docs/v0.3.1-validation.md) · [v0.3 验收](docs/v0.3-validation.md) · [分工设计](docs/work-assignment-factors-1.7.md) · [v0.2 验收](docs/v0.2-validation.md)
+测试运行在临时游戏副本和隔离存档中。可用 `--player-package` 指向已解压的发行目录以复核运行的 DLL。[0.3.2 实玩日志回归](docs/v0.3.2-validation.md) · [0.3.1 手测问题回归](docs/v0.3.1-validation.md) · [v0.3 验收](docs/v0.3-validation.md) · [分工设计](docs/work-assignment-factors-1.7.md) · [v0.2 验收](docs/v0.2-validation.md)

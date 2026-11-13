@@ -10,11 +10,13 @@ internal sealed record IngredientStock(IngredientCount Ingredient, Thing[] Stock
 }
 internal sealed record Pickup(Thing Thing, int Amount);
 internal sealed record OrderSite(Bill Bill, WorkGiverDef Giver, Building Station, List<IngredientStock> Supplies,
-    double WorkTicks, double? Iterations, bool CanModel);
+    double WorkTicks, double? TotalWorkTicks, bool CanModel, UnfinishedThing? InProgress);
 internal sealed record WorkSite(Thing Target, WorkGiverDef Giver, StatDef? Speed, SkillDef? Skill, double XpFactor);
 internal sealed record OpportunitySet(double? Capacity, List<OrderSite>? Orders = null, List<WorkSite>? Sites = null,
     bool HasUnmodelledWork = false, double? Demand = null, string? SharedSiteIds = null);
-internal sealed record HaulRoute(Thing Item, IntVec3 Destination, int Amount);
+[Flags]
+internal enum HaulTask { None = 0, StockItem = 1, StockCorpse = 2, Blueprint = 4, Frame = 8 }
+internal sealed record HaulRoute(Thing Item, IntVec3 Destination, int Amount, HaulTask Task);
 internal readonly record struct RouteCost(double WeatherAdjustedCells, double GroundTicks)
 {
     internal double Ticks(double speed) => Math.Max(0,WeatherAdjustedCells*60/Math.Max(0.15,speed)+GroundTicks);
@@ -114,26 +116,31 @@ internal sealed class MapWorkOpportunities(Map map, int horizonTicks)
                 // Rely on the stock counter, but do not call Bill_Production.ShouldDoNow: it mutates bill.paused.
                 double? iterations = RemainingIterations(bill);
                 if (iterations <= 0) continue;
-                var bound = (bill as Bill_ProductionWithUft)?.BoundUft;
+                var bound = ResumableWorkpiece(bill, station);
                 var supplies = new List<IngredientStock>();
                 if (bound == null)
                     foreach (var ingredient in bill.recipe.ingredients)
                         supplies.Add(new(ingredient, FindSupplies(ingredient, bill, station)));
-                double work = bound?.workLeft ?? bill.recipe.workAmount;
-                if (work <= 0 && bill.recipe.products is { Count: > 0 } products)
+                double fullWork = bill.recipe.workAmount;
+                if (fullWork <= 0 && bill.recipe.products is { Count: > 0 })
                 {
-                    var stuff = supplies.SelectMany(i => i.Stock).FirstOrDefault(t => t.def.IsStuff)?.def;
-                    work = bill.recipe.WorkAmountForStuff(stuff);
+                    // Future items have no committed material yet. For a bound batch, use the
+                    // actual first item's stuff as the estimate until the game chooses new ingredients.
+                    var stuff = bound?.Stuff ?? supplies.SelectMany(i => i.Stock).FirstOrDefault(t => t.def.IsStuff)?.def;
+                    fullWork = bill.recipe.WorkAmountForStuff(stuff);
                 }
-                var order = new OrderSite(bill, giver, station, supplies, Math.Max(1, work), iterations,
-                    bill is Bill_Production && work > 0 && bill.recipe.workerClass.Assembly == typeof(RecipeDef).Assembly);
+                double nextWork = bound is { Initialized: true } ? Math.Max(0, bound.workLeft) : fullWork;
+                bool known = bill is Bill_Production && fullWork > 0 && bill.recipe.workerClass.Assembly == typeof(RecipeDef).Assembly;
+                double? totalWork = known && iterations is double count
+                    ? nextWork + Math.Max(0, count - 1) * fullWork : null;
+                var order = new OrderSite(bill, giver, station, supplies, Math.Max(1, nextWork), totalWork, known, bound);
                 // The map may have plenty of ingredients in general, but none inside this bill's radius/filter.
                 if (bound != null || SelectSupplies(order, null) != null) orders.Add(order);
             }
         }
         var distinct = orders.DistinctBy(o => o.Bill).ToArray();
-        double? finite = distinct.All(o => o.Iterations.HasValue && o.CanModel)
-            ? distinct.Sum(o => o.Iterations!.Value * o.WorkTicks) / horizonTicks : null;
+        double? finite = distinct.All(o => o.TotalWorkTicks.HasValue)
+            ? distinct.Sum(o => o.TotalWorkTicks!.Value) / horizonTicks : null;
         var stations = orders.Select(o=>o.Station).Distinct().ToArray();
         return new(stations.Length, orders, Demand:finite, SharedSiteIds:SiteIds(stations));
     }
@@ -142,6 +149,20 @@ internal sealed class MapWorkOpportunities(Map map, int horizonTicks)
     {
         var ids = sites.Select(s=>s.GetUniqueLoadID()).Order(StringComparer.Ordinal).ToArray();
         return ids.Length==0 ? null : string.Join('|',ids);
+    }
+
+    private static UnfinishedThing? ResumableWorkpiece(Bill bill, Building station)
+    {
+        if (bill is not Bill_ProductionWithUft { BoundUft: { } workpiece }) return null;
+        var creator = workpiece.Creator;
+        if (creator == null || creator.Downed || creator.HostFaction != null || creator.Destroyed || !creator.Spawned)
+            return null;
+
+        // In 1.7 BoundWorker clears BoundUft when the creator's station work is disabled.
+        // Mirror its first-matching-giver rule without detaching the workpiece during preview.
+        var primaryWork = DefDatabase<WorkGiverDef>.AllDefsListForReading
+            .FirstOrDefault(g => g.fixedBillGiverDefs?.Contains(station.def) == true)?.workType;
+        return primaryWork == null || creator.workSettings?.WorkIsActive(primaryWork) == true ? workpiece : null;
     }
 
     private static double? RemainingIterations(Bill bill)
@@ -171,8 +192,8 @@ internal sealed class MapWorkOpportunities(Map map, int horizonTicks)
 
     internal List<Pickup>? SelectSupplies(OrderSite order, Pawn? worker)
     {
-        if (order.Bill is Bill_ProductionWithUft { BoundUft: {} uft } bound)
-            return worker == null || (worker == bound.BoundWorker && CanAccess(worker,uft)) ? [] : null;
+        if (order.InProgress is { } uft)
+            return worker == null || (worker == uft.Creator && CanAccess(worker,uft)) ? [] : null;
         var used = new Dictionary<Thing,int>();
         foreach (var pool in order.Supplies.OrderBy(p => p.Stock.Length))
         {
@@ -227,10 +248,20 @@ internal sealed class MapWorkOpportunities(Map map, int horizonTicks)
             if (!item.Spawned || item.IsForbidden(Faction.OfPlayer) || item.Position.Fogged(map)) continue;
             var destination = StorageCell(item.def, item.Position, StoreUtility.CurrentStoragePriorityOf(item));
             if (destination is not {} cell) continue;
-            haulRoutes.Add(new(item,cell,item.stackCount));
+            haulRoutes.Add(new(item,cell,item.stackCount,item is Corpse ? HaulTask.StockCorpse : HaulTask.StockItem));
             if (haulRoutes.Count == 12) break; // fixed sample, independent of the number of pawns
         }
         return haulRoutes;
+    }
+
+    internal IEnumerable<HaulRoute> HaulSamples(HaulTask tasks)
+    {
+        if ((tasks & (HaulTask.StockItem | HaulTask.StockCorpse)) != 0)
+            foreach (var route in Hauling())
+                if ((tasks & route.Task) != 0) yield return route;
+        if ((tasks & (HaulTask.Blueprint | HaulTask.Frame)) != 0)
+            foreach (var route in Deliveries())
+                if ((tasks & route.Task) != 0) yield return route;
     }
 
     internal IReadOnlyList<HaulRoute> Deliveries()
@@ -249,7 +280,8 @@ internal sealed class MapWorkOpportunities(Map map, int horizonTicks)
                 if (needed<=0) continue;
                 var source=map.listerThings.ThingsOfDef(material.thingDef).Where(t=>t.Spawned &&
                     !t.Position.Fogged(map) && !t.IsForbidden(Faction.OfPlayer)).MinBy(t=>t.Position.DistanceToSquared(site.Position));
-                if (source!=null) deliveries.Add(new(source,site.Position,Math.Min(source.stackCount,needed)));
+                if (source!=null) deliveries.Add(new(source,site.Position,Math.Min(source.stackCount,needed),
+                    site is Frame ? HaulTask.Frame : HaulTask.Blueprint));
                 if (deliveries.Count==12) return deliveries;
             }
         }

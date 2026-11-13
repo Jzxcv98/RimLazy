@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <RimLazy_StalePlan>The colony or its work table changed. Preview again.</RimLazy_StalePlan>
+  <RimLazy_StaleRange>The work table now supports {1} priority levels, previously {0}. Preview again.</RimLazy_StaleRange>
+  <RimLazy_StaleColumns>The work columns or their order changed. Preview again.</RimLazy_StaleColumns>
+  <RimLazy_StaleColumn>The settings, work sites or available work for {0} changed. Preview again.</RimLazy_StaleColumn>
+  <RimLazy_StaleWorkers>The workers present on this map changed. Preview again.</RimLazy_StaleWorkers>
+  <RimLazy_StaleAvailability>The available work time for {0} changed. Preview again.</RimLazy_StaleAvailability>
+  <RimLazy_StaleCell>The priority or lock for {0} in {1} changed. Preview again.</RimLazy_StaleCell>
+  <RimLazy_StaleEligibility>The eligibility of {0} for {1} changed. Preview again.</RimLazy_StaleEligibility>
+  <RimLazy_StaleEstimate>The expected performance or training for {0} in {1} changed. Preview again.</RimLazy_StaleEstimate>
   <RimLazy_UndoConflict>Undo could not start. A changed cell is now locked, unavailable, or edited since the last application.</RimLazy_UndoConflict>
   <RimLazy_ManualRequired>Enable manual priorities in the Work tab first.</RimLazy_ManualRequired>
   <RimLazy_DetailedWorkTable>Work Tab controls hourly and individual task priorities. RimLazy supports preview only with this work table.</RimLazy_DetailedWorkTable>

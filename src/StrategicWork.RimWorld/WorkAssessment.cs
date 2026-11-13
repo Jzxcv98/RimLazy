@@ -69,18 +69,33 @@ internal sealed class WorkerAssessment(Pawn pawn, StatEvaluation stats, MapWorkO
             }
             return Combine(results, !stats.Approximate);
         }
-        if (work.defName is "FSFHauling" or "Hauling" or "FSFDeliver")
+        var haulTasks = HaulTasksFor(work, pawn);
+        if (haulTasks != HaulTask.None)
         {
-            var available = work.defName=="FSFDeliver" ? map.Deliveries() : map.Hauling();
-            var routes = available.Where(r => map.CanAccess(pawn,r.Item) &&
-                !r.Destination.IsForbidden(pawn) && pawn.CanReach(r.Destination,PathEndMode.Touch,Danger.Deadly)).ToList();
-            if (routes.Count > 0)
-            {
-                var samples = routes.Select(Haul).ToList();
-                return Combine(samples,!stats.Approximate);
-            }
+            var samples = map.HaulSamples(haulTasks).Where(route => map.CanAccess(pawn, route.Item) &&
+                !route.Destination.IsForbidden(pawn) && pawn.CanReach(route.Destination, PathEndMode.Touch, Danger.Deadly))
+                .Select(Haul).ToList();
+            if (samples.Count > 0) return Combine(samples, !stats.Approximate);
         }
         return Fallback(work);
+    }
+
+    // Work-table mods can move or clone these providers. Maintenance, merged piles and hoppers
+    // have different jobs and targets; an ordinary stockpile trip cannot predict their workload.
+    internal static HaulTask HaulTasksFor(WorkTypeDef work, Pawn pawn)
+    {
+        HaulTask tasks = HaulTask.None;
+        if (work.workGiversByPriority == null) return tasks;
+        foreach (var giver in work.workGiversByPriority)
+        {
+            var kind = giver.giverClass;
+            var task = kind == typeof(WorkGiver_HaulGeneral) ? HaulTask.StockItem :
+                kind == typeof(WorkGiver_HaulCorpses) ? HaulTask.StockCorpse :
+                kind == typeof(WorkGiver_ConstructDeliverResourcesToBlueprints) ? HaulTask.Blueprint :
+                kind == typeof(WorkGiver_ConstructDeliverResourcesToFrames) ? HaulTask.Frame : HaulTask.None;
+            if (task != HaulTask.None && WorkProfile.CapableOfGiver(pawn, giver)) tasks |= task;
+        }
+        return tasks;
     }
 
     private static Evaluation Combine(List<WorkAssessment> rows, bool comparable)

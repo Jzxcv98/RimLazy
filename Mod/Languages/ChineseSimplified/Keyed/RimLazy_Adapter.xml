@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <RimLazy_StalePlan>殖民地或工作表已发生变化，请重新预览。</RimLazy_StalePlan>
+  <RimLazy_StaleRange>工作表档位上限已从 {0} 变为 {1}，请重新预览。</RimLazy_StaleRange>
+  <RimLazy_StaleColumns>工作表中的岗位或顺序已变，请重新预览。</RimLazy_StaleColumns>
+  <RimLazy_StaleColumn>「{0}」的岗位设置、工位或可用工作量已变，请重新预览。</RimLazy_StaleColumn>
+  <RimLazy_StaleWorkers>在场的可分工人员已变，请重新预览。</RimLazy_StaleWorkers>
+  <RimLazy_StaleAvailability>{0} 的可劳动时间已变，请重新预览。</RimLazy_StaleAvailability>
+  <RimLazy_StaleCell>{0} 的「{1}」优先级或锁定状态已变，请重新预览。</RimLazy_StaleCell>
+  <RimLazy_StaleEligibility>{0} 的「{1}」工作资格已变，请重新预览。</RimLazy_StaleEligibility>
+  <RimLazy_StaleEstimate>{0} 的「{1}」预计表现或培养收益已变，请重新预览。</RimLazy_StaleEstimate>
   <RimLazy_UndoConflict>无法撤销。上次改动的格子已被锁定、修改，或当前不可用。</RimLazy_UndoConflict>
   <RimLazy_ManualRequired>请先在“工作”页勾选手动优先级。</RimLazy_ManualRequired>
   <RimLazy_DetailedWorkTable>Work Tab 管理逐小时和逐项工作的优先级。启用该工作表时，RimLazy 仅支持预览。</RimLazy_DetailedWorkTable>

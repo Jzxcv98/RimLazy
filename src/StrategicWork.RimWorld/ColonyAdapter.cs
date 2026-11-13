@@ -62,7 +62,7 @@ public static class ColonyAdapter
             if (columns[i].StrategyId==null || columns[i].OutputDemand==null ||
                 demand[definitions[i]].Orders is not {} orders) continue;
             var once = orders.DistinctBy(o=>o.Bill);
-            double sharedDemand = once.Sum(o=>o.Iterations!.Value*o.WorkTicks/billViews[o.Bill])/horizon;
+            double sharedDemand = once.Sum(o=>o.TotalWorkTicks!.Value/billViews[o.Bill])/horizon;
             columns[i]=columns[i] with { OutputDemand=sharedDemand };
         }
 
@@ -101,22 +101,38 @@ public static class ColonyAdapter
         if (!capture.ManualPriorities)
             throw Problem("RimLazy_StalePlan");
         var live = Capture(map, capture.Mappings, capture.Locks, capture.RequestedRange,capture.Rush);
-        if (live.MaxPriority != capture.MaxPriority || !live.Columns.SequenceEqual(capture.Columns) ||
-            live.Inputs.Count != capture.Inputs.Count)
-            throw Problem("RimLazy_StalePlan");
+        if (live.MaxPriority != capture.MaxPriority)
+            throw Changed("RimLazy_StaleRange", capture.MaxPriority, live.MaxPriority);
+        if (live.Columns.Count != capture.Columns.Count) throw Problem("RimLazy_StaleColumns");
+        for (int i = 0; i < live.Columns.Count; i++)
+        {
+            var before = capture.Columns[i];
+            var now = live.Columns[i];
+            if (before == now) continue;
+            if (before.Id != now.Id) throw Problem("RimLazy_StaleColumns");
+            throw Changed("RimLazy_StaleColumn", live.Works[i].Label);
+        }
+        if (live.Inputs.Count != capture.Inputs.Count) throw Problem("RimLazy_StaleWorkers");
         // Orders can be reassigned, a worker can become incapable, or a mod can change the range while previewing.
         // Compare the inputs that affect admissibility, including cells that the plan leaves untouched.
         for (int i = 0; i < live.Inputs.Count; i++)
         {
             var was = capture.Inputs[i];
             var now = live.Inputs[i];
-            if (was.Id != now.Id || was.Labor != now.Labor || was.Cells.Any(pair =>
-                !now.Cells.TryGetValue(pair.Key, out var c) || c.Current != pair.Value.Current ||
-                c.Eligible != pair.Value.Eligible || c.Locked != pair.Value.Locked ||
-                c.PerformanceComparable != pair.Value.PerformanceComparable ||
-                MateriallyDifferent(c.Suitability,pair.Value.Suitability) ||
-                MateriallyDifferent(c.TrainingGain,pair.Value.TrainingGain)))
-                throw Problem("RimLazy_StalePlan");
+            if (was.Id != now.Id) throw Problem("RimLazy_StaleWorkers");
+            var workerLabel = live.Pawns[i].Label;
+            if (was.Labor != now.Labor) throw Changed("RimLazy_StaleAvailability", workerLabel);
+            foreach (var (work, oldCell) in was.Cells)
+            {
+                if (!now.Cells.TryGetValue(work, out var cell)) throw Problem("RimLazy_StaleColumns");
+                string? reason = cell.Current != oldCell.Current || cell.Locked != oldCell.Locked ? "RimLazy_StaleCell" :
+                    cell.Eligible != oldCell.Eligible ? "RimLazy_StaleEligibility" :
+                    cell.PerformanceComparable != oldCell.PerformanceComparable ||
+                    MateriallyDifferent(cell.Suitability, oldCell.Suitability) ||
+                    MateriallyDifferent(cell.TrainingGain, oldCell.TrainingGain) ? "RimLazy_StaleEstimate" : null;
+                if (reason != null)
+                    throw Changed(reason, workerLabel, live.Works.First(w => w.Id == work).Label);
+            }
         }
         var workers = Workers(map).ToDictionary(p => p.GetUniqueLoadID(), StringComparer.Ordinal);
         var defs = DefDatabase<WorkTypeDef>.AllDefsListForReading
@@ -209,6 +225,8 @@ public static class ColonyAdapter
     }
 
     internal static InvalidOperationException Problem(string key) => new(key.Translate().ToString());
+    private static InvalidOperationException Changed(string key, params NamedArgument[] args) =>
+        new(key.Translate(args).ToString());
     private static bool MateriallyDifferent(double a,double b) =>
         Math.Abs(a-b)>0.10*Math.Max(0.01,Math.Max(Math.Abs(a),Math.Abs(b)));
 }
